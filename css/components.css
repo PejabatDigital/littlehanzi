@@ -1,0 +1,597 @@
+/* components.css — one block per Figma component (Design System → Components).
+   Sizes come from the Figma variants; phone sizes are set via the --c-* vars
+   at the bottom of each block so the markup never changes. */
+
+/* ============================================================
+   Chunky edge — every interactive element in this app has one.
+   6px bottom border in the darker "edge" colour; pressing sinks it.
+   ============================================================ */
+
+.edge {
+  border-style: solid;
+  border-width: 0 0 var(--size-edge) 0;
+  transition: transform var(--motion-press) var(--ease-out),
+              border-bottom-width var(--motion-press) var(--ease-out);
+}
+
+.edge:active:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(4px);
+  border-bottom-width: 2px;
+}
+
+/* ============================================================
+   Icon
+   ============================================================ */
+
+.icon { display: inline-flex; flex: none; color: currentColor; }
+.icon > svg { width: 100%; height: 100%; }
+
+/* ============================================================
+   Button — 88px tall, icon + short label. Icon carries the meaning.
+   ============================================================ */
+
+.btn {
+  --btn-bg: var(--color-action-primary);
+  --btn-edge: var(--color-action-primary-edge);
+  --btn-text: var(--color-text-on-accent);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  height: var(--size-tap-lg);
+  min-width: 160px;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  background: var(--btn-bg);
+  border-color: var(--btn-edge);
+  color: var(--btn-text);
+  font-size: var(--type-button);
+  font-weight: 800;
+  line-height: 1.17;
+  white-space: nowrap;
+}
+
+.btn .icon { width: 32px; height: 32px; }
+
+.btn--primary   { --btn-bg: var(--color-action-primary);      --btn-edge: var(--color-action-primary-edge); }
+.btn--audio     { --btn-bg: var(--color-action-audio);        --btn-edge: var(--color-action-audio-edge); }
+.btn--correct   { --btn-bg: var(--color-feedback-correct);    --btn-edge: var(--color-feedback-correct-edge); }
+.btn--try-again { --btn-bg: var(--color-feedback-try-again);  --btn-edge: var(--color-feedback-try-again-edge);
+                  --btn-text: var(--color-text-primary); }
+
+.btn--secondary {
+  --btn-bg: var(--color-bg-surface);
+  --btn-edge: var(--color-border-default);
+  --btn-text: var(--color-text-primary);
+  border-width: 3px 3px var(--size-edge) 3px;
+}
+
+.btn:disabled, .btn[aria-disabled="true"] {
+  --btn-bg: var(--color-state-locked-soft);
+  --btn-edge: var(--color-border-default);
+  --btn-text: var(--color-text-disabled);
+  border-width: 3px 3px var(--size-edge) 3px;
+  cursor: default;
+}
+
+/* ============================================================
+   Round Button — icon only. L = the big replay speaker. M = back/home.
+   ============================================================ */
+
+.round-btn {
+  --rb-bg: var(--color-action-audio);
+  --rb-edge: var(--color-action-audio-edge);
+  --rb-fg: var(--color-icon-on-accent);
+  --rb-size: var(--size-tap-min);
+  --rb-icon: 32px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--rb-size);
+  height: var(--rb-size);
+  border-radius: var(--radius-full);
+  background: var(--rb-bg);
+  border-color: var(--rb-edge);
+  color: var(--rb-fg);
+  flex: none;
+}
+
+.round-btn .icon { width: var(--rb-icon); height: var(--rb-icon); }
+
+.round-btn--l { --rb-size: 112px; --rb-icon: 56px; }
+.round-btn--m { --rb-size: var(--size-tap-min); --rb-icon: 32px; }
+
+.round-btn--audio     { --rb-bg: var(--color-action-audio);   --rb-edge: var(--color-action-audio-edge); }
+.round-btn--primary   { --rb-bg: var(--color-action-primary); --rb-edge: var(--color-action-primary-edge); }
+.round-btn--secondary {
+  --rb-bg: var(--color-bg-surface);
+  --rb-edge: var(--color-border-default);
+  --rb-fg: var(--color-icon-default);
+  border-width: 3px 3px var(--size-edge) 3px;
+}
+
+/* ============================================================
+   Character Card — one Chinese word. Try again is warm yellow, never red.
+   ============================================================ */
+
+.char-card {
+  --cc-w: 240px;
+  --cc-h: 260px;
+  --cc-radius: var(--radius-lg);
+  --cc-type: var(--type-char-l);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: var(--cc-w);
+  height: var(--cc-h);
+  border-radius: var(--cc-radius);
+  background: var(--color-bg-surface);
+  border-color: var(--color-border-default);
+  border-width: 3px 3px var(--size-edge) 3px;
+  color: var(--color-text-primary);
+  font-family: var(--font-hanzi);
+  font-weight: 500;
+  font-size: var(--cc-type);
+  line-height: 1.16;
+}
+
+.char-card--m {
+  --cc-w: 144px;
+  --cc-h: 160px;
+  --cc-radius: var(--radius-md);
+  --cc-type: var(--type-char-m);
+}
+
+.char-card--xl { --cc-w: 380px; --cc-h: 400px; --cc-type: var(--type-char-xl); }
+
+.char-card.is-selected {
+  background: var(--color-action-audio-soft);
+  border-color: var(--color-border-selected);
+  border-width: 4px 4px var(--size-edge) 4px;
+}
+.char-card.is-correct {
+  background: var(--color-feedback-correct-soft);
+  border-color: var(--color-feedback-correct);
+  border-width: 4px 4px var(--size-edge) 4px;
+}
+.char-card.is-try-again {
+  background: var(--color-feedback-try-again-soft);
+  border-color: var(--color-feedback-try-again);
+  border-width: 4px 4px var(--size-edge) 4px;
+}
+.char-card.is-face-down {
+  background: var(--color-action-primary);
+  border-color: var(--color-action-primary-edge);
+  border-width: 4px 4px var(--size-edge) 4px;
+  color: var(--color-text-on-accent);
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-size: 40px;
+}
+.char-card.is-dimmed { opacity: .45; }
+.char-card.is-matched { visibility: hidden; }
+
+/* ============================================================
+   Pinyin Chip — tone marks must stay legible.
+   ============================================================ */
+
+.pinyin-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 176px;
+  height: 76px;
+  padding: 0 var(--spacing-md);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-surface);
+  border-color: var(--color-border-default);
+  border-width: 3px 3px var(--size-edge) 3px;
+  color: var(--color-text-primary);
+  font-size: var(--type-pinyin-m);
+  font-weight: 700;
+  line-height: 1.33;
+  white-space: nowrap;
+}
+
+.pinyin-chip.is-selected {
+  background: var(--color-action-audio-soft);
+  border-color: var(--color-border-selected);
+  border-width: 4px 4px var(--size-edge) 4px;
+  color: var(--color-action-audio-edge);
+}
+.pinyin-chip.is-matched {
+  background: var(--color-feedback-correct-soft);
+  border-color: var(--color-feedback-correct);
+  border-width: 4px 4px var(--size-edge) 4px;
+  color: var(--color-feedback-correct-edge);
+}
+.pinyin-chip.is-try-again {
+  background: var(--color-feedback-try-again-soft);
+  border-color: var(--color-feedback-try-again);
+  border-width: 4px 4px var(--size-edge) 4px;
+  animation: shake var(--motion-shake) var(--ease-out);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+/* ============================================================
+   Speaker Card — Memory Match audio card, pairs with Character Card M.
+   ============================================================ */
+
+.speaker-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--cc-w, 144px);
+  height: var(--cc-h, 160px);
+  border-radius: var(--radius-md);
+  background: var(--color-action-primary);
+  border-color: var(--color-action-primary-edge);
+  border-width: 4px 4px var(--size-edge) 4px;
+  color: var(--color-text-on-accent);
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-size: 40px;
+}
+
+.speaker-card .icon { width: 64px; height: 64px; display: none; }
+
+.speaker-card.is-face-up,
+.speaker-card.is-matched { font-size: 0; }
+.speaker-card.is-face-up .icon,
+.speaker-card.is-matched .icon { display: inline-flex; }
+
+.speaker-card.is-face-up {
+  background: var(--color-action-audio-soft);
+  border-color: var(--color-action-audio);
+  color: var(--color-action-audio);
+}
+.speaker-card.is-matched {
+  background: var(--color-feedback-correct-soft);
+  border-color: var(--color-feedback-correct);
+  color: var(--color-feedback-correct);
+}
+
+/* ============================================================
+   Avatar — animal art on a soft colour circle, white ring.
+   ============================================================ */
+
+.avatar {
+  --av-size: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--av-size);
+  height: var(--av-size);
+  border-radius: var(--radius-full);
+  background: var(--avatar-persimmon-soft);
+  border: 4px solid var(--color-bg-surface);
+  box-shadow: var(--elevation-soft);
+  flex: none;
+  overflow: hidden;
+}
+
+.avatar img, .avatar svg { width: 72%; height: 72%; }
+
+.avatar--l { --av-size: 120px; }
+.avatar--m { --av-size: 80px; }
+.avatar--s { --av-size: 56px; }
+.avatar--xl { --av-size: 204px; }
+
+.avatar[data-color="persimmon"] { background: var(--avatar-persimmon-soft); }
+.avatar[data-color="jade"]      { background: var(--avatar-jade-soft); }
+.avatar[data-color="sky"]       { background: var(--avatar-sky-soft); }
+.avatar[data-color="sunshine"]  { background: var(--avatar-sunshine-soft); }
+.avatar[data-color="plum"]      { background: var(--avatar-plum-soft); }
+
+/* Colour swatch used when picking an avatar colour. */
+.swatch {
+  width: 44px; height: 44px;
+  border-radius: var(--radius-full);
+  border: 4px solid transparent;
+  flex: none;
+}
+.swatch[data-color="persimmon"] { background: var(--persimmon-500); }
+.swatch[data-color="jade"]      { background: var(--jade-500); }
+.swatch[data-color="sky"]       { background: var(--sky-500); }
+.swatch[data-color="sunshine"]  { background: var(--sunshine-500); }
+.swatch[data-color="plum"]      { background: var(--plum-500); }
+.swatch.is-selected { border-color: var(--color-text-primary); }
+
+/* ============================================================
+   Profile Card
+   ============================================================ */
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  width: 240px;
+  height: 300px;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  border-color: var(--color-border-default);
+  border-width: 3px 3px var(--size-edge) 3px;
+}
+
+.profile-card__name {
+  font-size: var(--type-section);
+  font-weight: 800;
+  line-height: 1.28;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-card--add {
+  background: var(--color-bg-soft);
+  border: 4px dashed var(--color-border-default);
+  color: var(--color-text-secondary);
+}
+
+.profile-card--add .plus-ring {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px; height: 120px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-sunken);
+  color: var(--color-text-secondary);
+}
+.profile-card--add .plus-ring .icon { width: 48px; height: 48px; }
+
+/* Age chip: "6 岁" */
+.age-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-sunken);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.age-chip__n { font-size: 20px; font-weight: 600; line-height: 1.4; }
+.age-chip__sui { font-family: var(--font-hanzi); font-weight: 500; font-size: 18px; }
+
+/* ============================================================
+   Station Node — stops on the 8-station path.
+   ============================================================ */
+
+.station {
+  --st-size: 104px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--st-size);
+  height: var(--st-size);
+  border-radius: var(--radius-full);
+  background: var(--color-state-locked-soft);
+  border-color: var(--color-border-default);
+  border-width: 3px 3px var(--size-edge) 3px;
+  color: var(--color-state-locked);
+  font-size: var(--type-title);
+  font-weight: 800;
+  line-height: 1.2;
+  flex: none;
+}
+
+.station .icon { width: 40px; height: 40px; }
+
+.station.is-current {
+  background: var(--color-action-primary);
+  border-color: var(--color-action-primary-edge);
+  border-width: 0 0 var(--size-edge) 0;
+  color: var(--color-text-on-accent);
+  box-shadow: var(--elevation-raised);
+}
+
+.station.is-completed {
+  background: var(--color-feedback-correct);
+  border-color: var(--color-feedback-correct-edge);
+  border-width: 0 0 var(--size-edge) 0;
+  color: var(--color-icon-on-accent);
+}
+.station.is-completed .icon { width: 48px; height: 48px; }
+
+/* Station 8 is the level check: plum when it is the current stop. */
+.station--check.is-current {
+  background: var(--color-activity-identification);
+  border-color: var(--color-activity-identification-edge);
+}
+
+.station.is-locked { cursor: default; }
+
+/* "Go" bubble above the current station */
+.go-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-surface);
+  border: 3px solid var(--color-action-primary);
+  border-bottom-width: 5px;
+  color: var(--color-action-primary-edge);
+  font-size: var(--type-button);
+  font-weight: 800;
+  line-height: 1.17;
+  white-space: nowrap;
+  animation: bob 1.6s ease-in-out infinite;
+}
+.go-bubble .icon { width: 28px; height: 28px; }
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .go-bubble { animation: none; }
+}
+
+/* ============================================================
+   Progress Bar — no numbers, just the fill.
+   ============================================================ */
+
+.progress {
+  width: 100%;
+  max-width: 480px;
+  min-width: 0;
+  height: 24px;
+  padding: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-sunken);
+  flex: 1 1 auto;
+}
+
+.progress__fill {
+  height: 16px;
+  width: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-feedback-correct);
+  transition: width 320ms var(--ease-out);
+}
+
+/* ============================================================
+   Activity Badge
+   ============================================================ */
+
+.activity-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-full);
+  background: var(--color-activity-this-or-that);
+  color: var(--color-text-on-accent);
+  font-size: var(--type-small);
+  font-weight: 700;
+  line-height: 1.38;
+  white-space: nowrap;
+}
+
+.activity-badge[data-activity="this-or-that"]   { background: var(--color-activity-this-or-that); }
+.activity-badge[data-activity="identification"] { background: var(--color-activity-identification); }
+.activity-badge[data-activity="pinyin-match"]   { background: var(--color-activity-pinyin-match); }
+.activity-badge[data-activity="memory-match"]   { background: var(--color-activity-memory-match); }
+
+/* ============================================================
+   Feedback Banner — slides up from the bottom. Never red.
+   ============================================================ */
+
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  width: 560px;
+  max-width: calc(100% - var(--spacing-xl));
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  background: var(--color-feedback-correct-soft);
+  border-style: solid;
+  border-color: var(--color-feedback-correct);
+  border-width: 3px 3px var(--size-edge) 3px;
+  color: var(--color-feedback-correct-edge);
+  box-shadow: var(--elevation-raised);
+  animation: banner-up var(--motion-banner) var(--ease-out);
+}
+
+.banner__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px; height: 72px;
+  border-radius: var(--radius-full);
+  background: var(--color-feedback-correct);
+  color: var(--color-icon-on-accent);
+  flex: none;
+}
+.banner__icon .icon { width: 40px; height: 40px; }
+
+.banner__text { font-size: var(--type-section); font-weight: 800; line-height: 1.28; }
+
+.banner--try-again {
+  background: var(--color-feedback-try-again-soft);
+  border-color: var(--color-feedback-try-again);
+  color: var(--color-text-primary);
+}
+.banner--try-again .banner__icon {
+  background: var(--color-feedback-try-again);
+  color: var(--color-text-primary);
+}
+
+@keyframes banner-up {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* ============================================================
+   Grown-up Note — Identification, first use only.
+   ============================================================ */
+
+.grown-up-note {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: var(--size-tap-min);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-full);
+  background: var(--color-activity-identification-soft);
+  color: var(--color-activity-identification-edge);
+  font-size: var(--type-small);
+  font-weight: 700;
+}
+.grown-up-note .icon { width: 28px; height: 28px; }
+
+/* ============================================================
+   Phone portrait — the Figma design is iPad-only, so these sizes
+   are set here, not read from the file.
+   ============================================================ */
+
+@media (max-width: 560px) {
+  .btn { min-width: 0; padding: var(--spacing-md) var(--spacing-lg); }
+  .btn .icon { width: 28px; height: 28px; }
+
+  .round-btn--l { --rb-size: 88px; --rb-icon: 44px; }
+
+  .char-card  { --cc-w: 156px; --cc-h: 176px; --cc-radius: var(--radius-md); }
+  .char-card--m  { --cc-w: 100px; --cc-h: 112px; }
+  .char-card--xl { --cc-w: min(288px, 80vw); --cc-h: 320px; }
+  .char-card.is-face-down { font-size: 32px; }
+
+  .speaker-card { --cc-w: 100px; --cc-h: 112px; font-size: 32px; }
+  .speaker-card .icon { width: 44px; height: 44px; }
+
+  .pinyin-chip { min-width: 128px; height: var(--size-tap-min); }
+
+  .profile-card { width: 156px; height: 212px; gap: var(--spacing-sm); padding: var(--spacing-md); }
+  .profile-card .avatar--l { --av-size: 84px; }
+  .profile-card--add .plus-ring { width: 84px; height: 84px; }
+  .profile-card--add .plus-ring .icon { width: 36px; height: 36px; }
+
+  .station { --st-size: 76px; }
+  .station .icon { width: 30px; height: 30px; }
+  .station.is-completed .icon { width: 34px; height: 34px; }
+
+  .banner { width: 100%; padding: var(--spacing-sm) var(--spacing-md); gap: var(--spacing-sm); }
+  .banner__icon { width: 52px; height: 52px; }
+  .banner__icon .icon { width: 28px; height: 28px; }
+
+  .progress { height: 20px; }
+  .progress__fill { height: 12px; }
+
+  .avatar--xl { --av-size: 132px; }
+}

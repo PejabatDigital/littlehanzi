@@ -1,0 +1,56 @@
+[
+  {
+    "id": "A1",
+    "name": "Level A1",
+    "file": "data/a1.json",
+    "available": true
+  },
+  {
+    "id": "A2",
+    "name": "Level A2",
+    "file": "data/a2.json",
+    "available": false
+  },
+  {
+    "id": "A3",
+    "name": "Level A3",
+    "file": "data/a3.json",
+    "available": false
+  },
+  {
+    "id": "A4",
+    "name": "Level A4",
+    "file": "data/a4.json",
+    "available": false
+  },
+  {
+    "id": "A5",
+    "name": "Level A5",
+    "file": "data/a5.json",
+    "available": false
+  },
+  {
+    "id": "A6",
+    "name": "Level A6",
+    "file": "data/a6.json",
+    "available": false
+  },
+  {
+    "id": "A7",
+    "name": "Level A7",
+    "file": "data/a7.json",
+    "available": false
+  },
+  {
+    "id": "A8",
+    "name": "Level A8",
+    "file": "data/a8.json",
+    "available": false
+  },
+  {
+    "id": "A9",
+    "name": "Level A9",
+    "file": "data/a9.json",
+    "available": false
+  }
+]

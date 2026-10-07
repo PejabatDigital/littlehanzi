@@ -1,0 +1,148 @@
+/* Little Hanzi — design tokens
+   Generated from Figma: Little Hanzi – Design System (2AUmUBlMM1m4eYiYEjNy7H)
+   Names match the Figma variables' code syntax exactly.
+   Primitives are used ONLY in this file. Components use semantic tokens. */
+
+:root {
+  /* ---------- Primitives ---------- */
+  --cream-50:#FFFBF4;
+  --cream-100:#FFF4E3;
+  --cream-200:#F6E7D0;
+  --cream-300:#EBD6B6;
+
+  --ink-900:#2B2633;
+  --ink-600:#5F5868;
+  --ink-400:#9A92A3;
+  --white:#FFFFFF;
+
+  --persimmon-100:#FFE6D3;
+  --persimmon-500:#FF7A3D;
+  --persimmon-700:#D9561C;
+
+  --jade-100:#D6F3EA;
+  --jade-500:#1FA884;
+  --jade-700:#137A5F;
+
+  --sky-100:#DCEBFC;
+  --sky-500:#3D8FE8;
+  --sky-700:#2367B3;
+
+  --sunshine-100:#FFF3C7;
+  --sunshine-500:#FFC63A;
+  --sunshine-700:#C98F00;
+
+  --plum-100:#ECE3FC;
+  --plum-500:#8A63E0;
+  --plum-700:#6440B3;
+
+  /* ---------- Semantic colour ---------- */
+  --color-bg-app:var(--cream-100);
+  --color-bg-surface:var(--white);
+  --color-bg-sunken:var(--cream-200);
+  --color-bg-soft:var(--cream-50);
+
+  --color-text-primary:var(--ink-900);
+  --color-text-secondary:var(--ink-600);
+  --color-text-disabled:var(--ink-400);
+  --color-text-on-accent:var(--white);
+
+  --color-icon-default:var(--ink-900);
+  --color-icon-on-accent:var(--white);
+
+  --color-border-default:var(--cream-300);
+  --color-border-selected:var(--sky-500);
+
+  --color-action-primary:var(--persimmon-500);
+  --color-action-primary-edge:var(--persimmon-700);
+  --color-action-primary-soft:var(--persimmon-100);
+
+  --color-action-audio:var(--sky-500);
+  --color-action-audio-edge:var(--sky-700);
+  --color-action-audio-soft:var(--sky-100);
+
+  --color-feedback-correct:var(--jade-500);
+  --color-feedback-correct-edge:var(--jade-700);
+  --color-feedback-correct-soft:var(--jade-100);
+
+  --color-feedback-try-again:var(--sunshine-500);
+  --color-feedback-try-again-edge:var(--sunshine-700);
+  --color-feedback-try-again-soft:var(--sunshine-100);
+
+  --color-state-locked:var(--ink-400);
+  --color-state-locked-soft:var(--cream-200);
+
+  --color-activity-this-or-that:var(--sky-500);
+  --color-activity-identification:var(--plum-500);
+  --color-activity-identification-edge:var(--plum-700);
+  --color-activity-identification-soft:var(--plum-100);
+  --color-activity-pinyin-match:var(--jade-500);
+  --color-activity-memory-match:var(--persimmon-500);
+
+  /* ---------- Avatar colour ramps (named, for data-driven lookup) ---------- */
+  --avatar-persimmon-soft:var(--persimmon-100);
+  --avatar-persimmon-ink:var(--persimmon-700);
+  --avatar-jade-soft:var(--jade-100);
+  --avatar-jade-ink:var(--jade-700);
+  --avatar-sky-soft:var(--sky-100);
+  --avatar-sky-ink:var(--sky-700);
+  --avatar-sunshine-soft:var(--sunshine-100);
+  --avatar-sunshine-ink:var(--sunshine-700);
+  --avatar-plum-soft:var(--plum-100);
+  --avatar-plum-ink:var(--plum-700);
+
+  /* ---------- Dimensions ---------- */
+  --spacing-xs:4px;
+  --spacing-sm:8px;
+  --spacing-md:16px;
+  --spacing-lg:24px;
+  --spacing-xl:32px;
+  --spacing-2xl:48px;
+
+  --radius-sm:12px;
+  --radius-md:20px;
+  --radius-lg:28px;
+  --radius-full:999px;
+
+  --size-tap-min:64px;
+  --size-tap-lg:88px;
+  --size-edge:6px;
+
+  /* ---------- Elevation ---------- */
+  --elevation-soft:0 4px 12px rgba(43,38,51,.08);
+  --elevation-raised:0 10px 28px rgba(43,38,51,.14);
+
+  /* ---------- Fonts ---------- */
+  --font-ui:"Nunito", system-ui, -apple-system, sans-serif;
+  --font-hanzi:"Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+
+  /* ---------- Type scale ----------
+     Fluid between phone portrait (390px) and iPad landscape (1194px).
+     Figma values are the upper bound; phone values keep tap targets >= 64px. */
+  --type-char-xl: clamp(100px, 13.4vw, 160px);   /* Identification card   */
+  --type-char-l:  clamp(64px,  8.0vw, 96px);     /* This or That cards    */
+  --type-char-m:  clamp(40px,  4.7vw, 56px);     /* Pinyin / Memory Match */
+
+  --type-title:   clamp(28px,  3.4vw, 40px);     /* Heading/Title   */
+  --type-section: clamp(22px,  2.3vw, 28px);     /* Heading/Section */
+  --type-button:  clamp(20px,  2.0vw, 24px);     /* Label/Button    */
+  --type-pinyin-l:clamp(24px,  2.7vw, 32px);     /* Pinyin/L        */
+  --type-pinyin-m:clamp(20px,  2.0vw, 24px);     /* Pinyin/M        */
+  --type-body:    clamp(17px,  1.7vw, 20px);     /* Body/Default    */
+  --type-small:   clamp(14px,  1.3vw, 16px);     /* Body/Small      */
+
+  /* ---------- Motion ---------- */
+  --motion-press: 90ms;
+  --motion-flip: 320ms;
+  --motion-banner: 260ms;
+  --motion-shake: 300ms;
+  --ease-out: cubic-bezier(.22,.61,.36,1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-press: 0ms;
+    --motion-flip: 0ms;
+    --motion-banner: 0ms;
+    --motion-shake: 0ms;
+  }
+}

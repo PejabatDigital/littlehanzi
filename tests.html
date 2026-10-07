@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Little Hanzi — engine tests</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="css/tokens.css">
+<style>
+  body {
+    margin: 0; padding: 32px 24px 80px;
+    background: var(--color-bg-app); color: var(--color-text-primary);
+    font-family: var(--font-ui); font-weight: 600;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 36px; font-weight: 800; margin: 0 0 4px; }
+  .sub { color: var(--color-text-secondary); font-size: 16px; font-weight: 700; margin: 0 0 24px; }
+  .summary { padding: 20px 24px; border-radius: var(--radius-lg); font-size: 24px; font-weight: 800; margin-bottom: 28px; }
+  .summary.pass { background: var(--color-feedback-correct-soft); color: var(--color-feedback-correct-edge); border: 3px solid var(--color-feedback-correct); }
+  .summary.fail { background: var(--color-feedback-try-again-soft); color: var(--color-text-primary); border: 3px solid var(--color-feedback-try-again); }
+  h2 { font-size: 18px; font-weight: 800; margin: 24px 0 8px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .04em; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { display: flex; gap: 12px; padding: 9px 14px; border-radius: 12px; background: var(--color-bg-surface); margin-bottom: 4px; font-size: 15px; align-items: flex-start; }
+  li.fail { background: var(--color-feedback-try-again-soft); }
+  .tick { font-weight: 800; flex: none; width: 54px; font-size: 13px; }
+  li .tick { color: var(--color-feedback-correct-edge); }
+  li.fail .tick { color: var(--color-feedback-try-again-edge); }
+  .msg { display: block; color: var(--color-feedback-try-again-edge); font-size: 13px; margin-top: 4px; font-family: ui-monospace, monospace; }
+  a { color: var(--color-action-audio-edge); font-weight: 800; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Engine tests</h1>
+  <p class="sub">The rules from the brief, asserted. <a href="components.html">← Component gallery</a></p>
+  <div id="out">Running…</div>
+</div>
+<script type="module">
+import { getResults, summary } from './js/tests/engine-tests.js';
+
+const out = document.getElementById('out');
+const results = getResults();
+const s = summary();
+out.textContent = '';
+
+const box = document.createElement('div');
+box.className = `summary ${s.failed ? 'fail' : 'pass'}`;
+box.textContent = s.failed
+  ? `${s.failed} of ${s.total} failed`
+  : `All ${s.total} tests passed`;
+out.append(box);
+
+let group = null, list = null;
+for (const r of results) {
+  if (r.group !== group) {
+    group = r.group;
+    const h = document.createElement('h2');
+    h.textContent = group;
+    out.append(h);
+    list = document.createElement('ul');
+    out.append(list);
+  }
+  const li = document.createElement('li');
+  if (!r.ok) li.className = 'fail';
+  const tick = document.createElement('span');
+  tick.className = 'tick';
+  tick.textContent = r.ok ? 'PASS' : 'FAIL';
+  const body = document.createElement('span');
+  body.textContent = r.name;
+  if (!r.ok) {
+    const m = document.createElement('span');
+    m.className = 'msg';
+    m.textContent = r.message;
+    body.append(m);
+  }
+  li.append(tick, body);
+  list.append(li);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Little Hanzi — components</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Noto+Sans+SC:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+  body { overflow: auto; -webkit-user-select: auto; user-select: auto; }
+  .gal { max-width: 1280px; margin: 0 auto; padding: var(--spacing-xl) var(--spacing-lg) 96px; }
+  .gal h1 { font-size: var(--type-title); font-weight: 800; margin: 0 0 var(--spacing-sm); }
+  .gal h2 {
+    font-size: var(--type-section); font-weight: 800;
+    margin: var(--spacing-2xl) 0 var(--spacing-xs);
+    padding-top: var(--spacing-md); border-top: 3px solid var(--color-border-default);
+  }
+  .gal .note { color: var(--color-text-secondary); font-size: var(--type-small); margin: 0 0 var(--spacing-md); }
+  .specimen {
+    display: flex; flex-wrap: wrap; gap: var(--spacing-lg);
+    align-items: flex-end; padding: var(--spacing-lg);
+    background: var(--color-bg-surface); border-radius: var(--radius-md);
+    border: 3px solid var(--color-border-default);
+  }
+  .specimen--sunken { background: var(--color-bg-sunken); }
+  .item { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); min-width: 0; max-width: 100%; }
+  .item:has(.progress) { flex: 1 1 320px; }
+  .item__label { font-size: 13px; font-weight: 700; color: var(--color-text-secondary); text-align: center; }
+  .bar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; gap: var(--spacing-sm); align-items: center; flex-wrap: wrap;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--color-bg-app); border-bottom: 3px solid var(--color-border-default);
+  }
+  .bar button {
+    padding: 10px 18px; border-radius: var(--radius-full);
+    border: 3px solid var(--color-border-default); background: var(--color-bg-surface);
+    font-weight: 800; font-size: 15px;
+  }
+  .bar button[aria-pressed="true"] { background: var(--color-action-primary); color: #fff; border-color: var(--color-action-primary-edge); }
+  .frame { margin: 0 auto; transition: max-width 200ms ease; }
+
+  @media (max-width: 560px) {
+    .gal { padding: var(--spacing-md) var(--spacing-sm) 64px; }
+    .specimen { padding: var(--spacing-md); gap: var(--spacing-md); }
+    .bar { padding: var(--spacing-sm); gap: 6px; }
+    .bar button { padding: 8px 12px; font-size: 13px; }
+    .bar strong { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="bar">
+  <strong style="font-size:15px">Width:</strong>
+  <button data-w="full" aria-pressed="true">Full</button>
+  <button data-w="1194">iPad landscape 1194</button>
+  <button data-w="834">iPad portrait 834</button>
+  <button data-w="390">Phone 390</button>
+  <span style="flex:1"></span>
+  <a href="tests.html" style="font-weight:800;font-size:15px;color:var(--color-action-audio-edge)">Engine tests →</a>
+</div>
+<div class="frame" id="frame"><div class="gal" id="gal"></div></div>
+
+<script type="module">
+import {
+  el, iconEl, Button, RoundButton, CharacterCard, PinyinChip, SpeakerCard,
+  Avatar, AgeChip, ProfileCard, AddProfileCard, StationNode, GoBubble,
+  ProgressBar, ActivityBadge, FeedbackBanner, GrownUpNote,
+  AVATAR_ART, AVATAR_COLORS,
+} from './js/ui.js';
+import { ICON_NAMES } from './js/icons.js';
+import { ACTIVITY, ACTIVITY_LABEL } from './js/engine/station.js';
+import { clear as clearNode } from './js/ui.js';
+import { getWords } from './js/data.js';
+import * as audio from './js/audio.js';
+
+const gal = document.getElementById('gal');
+
+function section(title, note, items, sunken = false) {
+  gal.append(el('h2', { text: title }));
+  if (note) gal.append(el('p', { class: 'note', text: note }));
+  gal.append(el('div', { class: `specimen${sunken ? ' specimen--sunken' : ''}` },
+    items.map(([label, node]) => el('div', { class: 'item' }, [node, el('span', { class: 'item__label', text: label })]))));
+}
+
+gal.append(el('h1', { text: 'Little Hanzi — component gallery' }));
+gal.append(el('p', { class: 'note', text: 'Every variant from the Figma Components page. Press any control to check the chunky-edge press. Switch width above to check phone sizes.' }));
+
+section('Icon', '10 line icons on a 48 grid, tinted with currentColor.',
+  ICON_NAMES.map((n) => [n, el('span', { class: 'icon', style: 'width:40px;height:40px;color:var(--color-text-primary)', html: iconEl(n, 40).innerHTML })]));
+
+section('Button', '88px tall. The icon carries the meaning; the label is optional.', [
+  ['Primary', Button({ label: 'Start', iconName: 'play', style: 'primary' })],
+  ['Audio', Button({ label: 'Listen', iconName: 'speaker', style: 'audio' })],
+  ['Correct', Button({ label: 'Got it', iconName: 'check', style: 'correct' })],
+  ['Try again', Button({ label: 'Try again', iconName: 'retry', style: 'try-again' })],
+  ['Secondary', Button({ label: 'Back', iconName: 'home', style: 'secondary' })],
+  ['Primary disabled', Button({ label: 'Start', iconName: 'play', style: 'primary', disabled: true })],
+  ['Secondary disabled', Button({ label: 'Back', iconName: 'home', style: 'secondary', disabled: true })],
+  ['Icon only', Button({ iconName: 'check', style: 'correct', ariaLabel: 'Got it' })],
+]);
+
+section('Round Button', 'L (112) is the big replay speaker. M (64) is the minimum tap size.', [
+  ['Audio L', RoundButton({ iconName: 'speaker', size: 'l', style: 'audio' })],
+  ['Primary L', RoundButton({ iconName: 'play', size: 'l', style: 'primary' })],
+  ['Secondary L', RoundButton({ iconName: 'home', size: 'l', style: 'secondary' })],
+  ['Audio M', RoundButton({ iconName: 'speaker', size: 'm', style: 'audio' })],
+  ['Primary M', RoundButton({ iconName: 'play', size: 'm', style: 'primary' })],
+  ['Secondary M', RoundButton({ iconName: 'home', size: 'm', style: 'secondary' })],
+]);
+
+section('Character Card — L', 'This or That. Try again is warm yellow, never red.', [
+  ['Default', CharacterCard({ word: '爸爸', size: 'l' })],
+  ['Selected', CharacterCard({ word: '爸爸', size: 'l', state: 'selected' })],
+  ['Correct', CharacterCard({ word: '爸爸', size: 'l', state: 'correct' })],
+  ['Try again', CharacterCard({ word: '爸爸', size: 'l', state: 'try-again' })],
+  ['Face down', CharacterCard({ word: '爸爸', size: 'l', state: 'face-down' })],
+  ['Dimmed', (() => { const c = CharacterCard({ word: '妈妈', size: 'l' }); c.classList.add('is-dimmed'); return c; })()],
+]);
+
+section('Character Card — M', 'Pinyin Match and Memory Match.', [
+  ['Default', CharacterCard({ word: '星星', size: 'm' })],
+  ['Selected', CharacterCard({ word: '星星', size: 'm', state: 'selected' })],
+  ['Correct', CharacterCard({ word: '星星', size: 'm', state: 'correct' })],
+  ['Try again', CharacterCard({ word: '星星', size: 'm', state: 'try-again' })],
+  ['Face down', CharacterCard({ word: '星星', size: 'm', state: 'face-down' })],
+]);
+
+section('Character Card — XL', 'Identification. Scales down with clamp() on phones.', [
+  ['Default', CharacterCard({ word: '讨厌', size: 'xl' })],
+]);
+
+section('Pinyin Chip', 'Tone marks must stay clear. Try again shakes for 300ms, then back to default.', [
+  ['Default', PinyinChip({ pinyin: 'bàba' })],
+  ['Selected', PinyinChip({ pinyin: 'māma', state: 'selected' })],
+  ['Matched', PinyinChip({ pinyin: 'jiějie', state: 'matched' })],
+  ['Try again (tap to replay)', (() => {
+    const chip = PinyinChip({ pinyin: 'xīngxing', state: 'try-again' });
+    chip.addEventListener('click', () => {
+      chip.classList.remove('is-try-again'); void chip.offsetWidth; chip.classList.add('is-try-again');
+    });
+    return chip;
+  })()],
+]);
+
+section('Speaker Card', 'Memory Match audio card. Pairs with Character Card M.', [
+  ['Face down', SpeakerCard({ state: 'face-down' })],
+  ['Face up', SpeakerCard({ state: 'face-up' })],
+  ['Matched', SpeakerCard({ state: 'matched' })],
+]);
+
+section('Avatar — art × colour', 'Animal art at 72% on a soft colour circle with a white ring.',
+  AVATAR_ART.flatMap((art) => AVATAR_COLORS.map((color) => [`${art} / ${color}`, Avatar({ art, color, size: 'l' })])));
+
+section('Avatar — sizes', 'XL = new-player preview, L = picker, M = path header, S = badges.', [
+  ['XL 204', Avatar({ art: 'panda', color: 'persimmon', size: 'xl' })],
+  ['L 120', Avatar({ art: 'bunny', color: 'sky', size: 'l' })],
+  ['M 80', Avatar({ art: 'cat', color: 'jade', size: 'm' })],
+  ['S 56', Avatar({ art: 'panda', color: 'plum', size: 's' })],
+]);
+
+section('Colour swatch', 'Used when picking an avatar colour on New player.',
+  AVATAR_COLORS.map((c, i) => [c, el('span', { class: `swatch${i === 0 ? ' is-selected' : ''}`, dataset: { color: c } })]));
+
+section('Profile Card', 'Tap anywhere to select. Add new opens profile creation.', [
+  ['Default', ProfileCard({ profile: { name: 'Mei', age: 6, avatar: { art: 'panda', color: 'persimmon' } } })],
+  ['Long name', ProfileCard({ profile: { name: 'Alexandria', age: 8, avatar: { art: 'bunny', color: 'sky' } } })],
+  ['Add new', AddProfileCard({})],
+], true);
+
+section('Age chip', 'Shown on the profile card and the new-player preview.',
+  [3, 5, 6, 9].map((a) => [`${a} 岁`, AgeChip(a)]));
+
+section('Station Node', 'Stations 1–7 are Kind=Station; station 8 is the level check.', [
+  ['Locked', StationNode({ number: 4, state: 'locked' })],
+  ['Current', StationNode({ number: 3, state: 'current' })],
+  ['Completed', StationNode({ number: 1, state: 'completed' })],
+  ['Check locked', StationNode({ number: 8, state: 'locked', kind: 'check' })],
+  ['Check current', StationNode({ number: 8, state: 'current', kind: 'check' })],
+  ['Check completed', StationNode({ number: 8, state: 'completed', kind: 'check' })],
+  ['Go bubble', GoBubble()],
+], true);
+
+section('Progress Bar', 'Top of every activity screen. No numbers.',
+  [0, 25, 50, 100].map((p) => [`${p}%`, ProgressBar(p)]));
+
+section('Activity Badge', 'Colour-coded tag for the current activity.',
+  Object.values(ACTIVITY).map((a) => [a, ActivityBadge(a, ACTIVITY_LABEL[a])]));
+
+section('Feedback Banner', 'Slides up from the bottom. Try again is sunny yellow — never red.', [
+  ['Correct', FeedbackBanner({ type: 'correct', message: 'Great job!' })],
+  ['Try again', FeedbackBanner({ type: 'try-again', message: 'Try again' })],
+]);
+
+section('Grown-up Note', 'Identification, first use only.', [
+  ['Default', GrownUpNote()],
+]);
+
+/* ---------------- audio bench ----------------
+   The iOS audio path is the riskiest part of the foundation, so it gets
+   checked here rather than waiting for the activity screens. */
+gal.append(el('h2', { text: 'Audio bench' }));
+gal.append(el('p', { class: 'note', text: 'Open this on the real iPad. Tap Unlock first (iOS only allows audio after a user tap), then play words and feedback sounds. Status should read "running".' }));
+
+const status = el('p', { class: 'note', text: 'AudioContext: locked' });
+const wordRow = el('div', { class: 'specimen' });
+
+const bench = el('div', { class: 'specimen' }, [
+  el('div', { class: 'item' }, [
+    RoundButton({
+      iconName: 'play', size: 'l', style: 'primary', ariaLabel: 'Unlock audio',
+      onClick: async () => {
+        const ok = await audio.unlock();
+        status.textContent = `AudioContext: ${ok ? 'running' : 'FAILED to unlock'}`;
+        if (!ok) return;
+        const words = (await getWords('A1')).slice(0, 6);
+        const failed = await audio.preload(words.map((w) => w.audio));
+        status.textContent = `AudioContext: running — preloaded ${words.length - failed.length}/${words.length} words`
+          + (failed.length ? ` (failed: ${failed.join(', ')})` : '');
+        clearNode(wordRow);
+        words.forEach((w) => wordRow.append(el('div', { class: 'item' }, [
+          CharacterCard({ word: w.word, size: 'm', onClick: () => audio.play(w.audio) }),
+          el('span', { class: 'item__label', text: w.pinyin }),
+        ])));
+      },
+    }),
+    el('span', { class: 'item__label', text: '1. Unlock + preload' }),
+  ]),
+  el('div', { class: 'item' }, [
+    Button({ label: 'Correct', iconName: 'check', style: 'correct', onClick: () => audio.playCorrect() }),
+    el('span', { class: 'item__label', text: 'chime' }),
+  ]),
+  el('div', { class: 'item' }, [
+    Button({ label: 'Try again', iconName: 'retry', style: 'try-again', onClick: () => audio.playTryAgain() }),
+    el('span', { class: 'item__label', text: 'gentle boop' }),
+  ]),
+  el('div', { class: 'item' }, [
+    Button({ label: 'Tap', iconName: 'play', style: 'secondary', onClick: () => audio.playTap() }),
+    el('span', { class: 'item__label', text: 'neutral click' }),
+  ]),
+]);
+
+gal.append(bench, status, el('p', { class: 'note', text: '2. Tap a card to hear its word.' }), wordRow);
+
+/* width switcher */
+const frame = document.getElementById('frame');
+document.querySelectorAll('.bar button').forEach((b) => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.bar button').forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+    frame.style.maxWidth = b.dataset.w === 'full' ? '' : `${b.dataset.w}px`;
+  });
+});
+</script>
+</body>
+</html>

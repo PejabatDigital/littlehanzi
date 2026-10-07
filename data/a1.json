@@ -1,0 +1,276 @@
+{
+  "id": "A1",
+  "name": "Level A1",
+  "words": [
+    {
+      "id": "a1_01",
+      "level": "A1",
+      "word": "爸爸",
+      "pinyin": "bàba",
+      "meaning": "dad",
+      "audio": "audio/a1/a1_01_baba.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_02",
+      "level": "A1",
+      "word": "妈妈",
+      "pinyin": "māma",
+      "meaning": "mum",
+      "audio": "audio/a1/a1_02_mama.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_03",
+      "level": "A1",
+      "word": "哥哥",
+      "pinyin": "gēge",
+      "meaning": "older brother",
+      "audio": "audio/a1/a1_03_gege.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_04",
+      "level": "A1",
+      "word": "姐姐",
+      "pinyin": "jiějie",
+      "meaning": "older sister",
+      "audio": "audio/a1/a1_04_jiejie.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_05",
+      "level": "A1",
+      "word": "妹妹",
+      "pinyin": "mèimei",
+      "meaning": "younger sister",
+      "audio": "audio/a1/a1_05_meimei.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_06",
+      "level": "A1",
+      "word": "宝贝",
+      "pinyin": "bǎobèi",
+      "meaning": "baby, darling, treasure",
+      "audio": "audio/a1/a1_06_baobei.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_07",
+      "level": "A1",
+      "word": "星星",
+      "pinyin": "xīngxing",
+      "meaning": "star",
+      "audio": "audio/a1/a1_07_xingxing.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_08",
+      "level": "A1",
+      "word": "花",
+      "pinyin": "huā",
+      "meaning": "flower",
+      "audio": "audio/a1/a1_08_hua.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_09",
+      "level": "A1",
+      "word": "去",
+      "pinyin": "qù",
+      "meaning": "to go",
+      "audio": "audio/a1/a1_09_qu.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_10",
+      "level": "A1",
+      "word": "讨厌",
+      "pinyin": "tǎoyàn",
+      "meaning": "to dislike; annoying",
+      "audio": "audio/a1/a1_10_taoyan.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_11",
+      "level": "A1",
+      "word": "说",
+      "pinyin": "shuō",
+      "meaning": "to say, to speak",
+      "audio": "audio/a1/a1_11_shuo.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_12",
+      "level": "A1",
+      "word": "人",
+      "pinyin": "rén",
+      "meaning": "person",
+      "audio": "audio/a1/a1_12_ren.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_13",
+      "level": "A1",
+      "word": "家",
+      "pinyin": "jiā",
+      "meaning": "home, family",
+      "audio": "audio/a1/a1_13_jia.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_14",
+      "level": "A1",
+      "word": "我",
+      "pinyin": "wǒ",
+      "meaning": "I, me",
+      "audio": "audio/a1/a1_14_wo.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_15",
+      "level": "A1",
+      "word": "大",
+      "pinyin": "dà",
+      "meaning": "big",
+      "audio": "audio/a1/a1_15_da.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_16",
+      "level": "A1",
+      "word": "小",
+      "pinyin": "xiǎo",
+      "meaning": "small",
+      "audio": "audio/a1/a1_16_xiao.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_17",
+      "level": "A1",
+      "word": "也",
+      "pinyin": "yě",
+      "meaning": "also, too",
+      "audio": "audio/a1/a1_17_ye.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_18",
+      "level": "A1",
+      "word": "爱",
+      "pinyin": "ài",
+      "meaning": "to love",
+      "audio": "audio/a1/a1_18_ai.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_19",
+      "level": "A1",
+      "word": "我们",
+      "pinyin": "wǒmen",
+      "meaning": "we, us",
+      "audio": "audio/a1/a1_19_women.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_20",
+      "level": "A1",
+      "word": "的",
+      "pinyin": "de",
+      "meaning": "possessive particle ('s)",
+      "audio": "audio/a1/a1_20_de.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_21",
+      "level": "A1",
+      "word": "里",
+      "pinyin": "lǐ",
+      "meaning": "inside",
+      "audio": "audio/a1/a1_21_li.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_22",
+      "level": "A1",
+      "word": "到",
+      "pinyin": "dào",
+      "meaning": "to arrive; to (a place)",
+      "audio": "audio/a1/a1_22_dao.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_23",
+      "level": "A1",
+      "word": "一",
+      "pinyin": "yī",
+      "meaning": "one",
+      "audio": "audio/a1/a1_23_yi.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_24",
+      "level": "A1",
+      "word": "嘻",
+      "pinyin": "xī",
+      "meaning": "hee (giggling sound)",
+      "audio": "audio/a1/a1_24_xi.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_25",
+      "level": "A1",
+      "word": "哈",
+      "pinyin": "hā",
+      "meaning": "ha (laughing sound)",
+      "audio": "audio/a1/a1_25_ha.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_26",
+      "level": "A1",
+      "word": "有",
+      "pinyin": "yǒu",
+      "meaning": "to have; there is",
+      "audio": "audio/a1/a1_26_you.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_27",
+      "level": "A1",
+      "word": "和",
+      "pinyin": "hé",
+      "meaning": "and; with",
+      "audio": "audio/a1/a1_27_he.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_28",
+      "level": "A1",
+      "word": "这",
+      "pinyin": "zhè",
+      "meaning": "this",
+      "audio": "audio/a1/a1_28_zhe.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_29",
+      "level": "A1",
+      "word": "是",
+      "pinyin": "shì",
+      "meaning": "to be (is, am, are)",
+      "audio": "audio/a1/a1_29_shi.mp3",
+      "image": null
+    },
+    {
+      "id": "a1_30",
+      "level": "A1",
+      "word": "都",
+      "pinyin": "dōu",
+      "meaning": "all, both",
+      "audio": "audio/a1/a1_30_dou.mp3",
+      "image": null
+    }
+  ]
+}
