@@ -24,6 +24,18 @@ export function el(tag, props = {}, children = []) {
   return node;
 }
 
+/* Wrap a handler so it never fires on a control that is disabled right now.
+   Native <button disabled> already blocks clicks; this also covers
+   aria-disabled and keeps the listener attached when the state changes. */
+function guard(handler) {
+  if (typeof handler !== 'function') return null;
+  return (event) => {
+    const t = event.currentTarget;
+    if (t && (t.disabled || t.getAttribute('aria-disabled') === 'true')) return;
+    return handler(event);
+  };
+}
+
 export function iconEl(name, size = 32) {
   return el('span', { class: 'icon', html: icon(name, size) });
 }
@@ -41,7 +53,7 @@ export function Button({ label, iconName, style = 'primary', disabled = false, o
     type,
     disabled: disabled || null,
     'aria-label': ariaLabel || (label ? null : iconName),
-    onClick: disabled ? null : onClick,
+    onClick: guard(onClick),
   }, [
     iconName ? iconEl(iconName, 32) : null,
     label ? el('span', { text: label }) : null,
@@ -57,7 +69,7 @@ export function RoundButton({ iconName, size = 'm', style = 'audio', onClick, ar
     type: 'button',
     disabled: disabled || null,
     'aria-label': ariaLabel || iconName,
-    onClick: disabled ? null : onClick,
+    onClick: guard(onClick),
   }, [iconEl(iconName, size === 'l' ? 56 : 32)]);
 }
 
@@ -170,7 +182,7 @@ export function StationNode({ number, state = 'locked', kind = 'station', onClic
     type: 'button',
     'aria-label': kind === 'check' ? `Level check, ${state}` : `Station ${number}, ${state}`,
     disabled: state === 'locked' || null,
-    onClick: state === 'locked' ? null : onClick,
+    onClick: guard(onClick),
   }, [inner]);
 }
 

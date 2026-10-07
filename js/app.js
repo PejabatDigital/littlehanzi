@@ -5,6 +5,12 @@ import * as storage from './storage.js';
 import * as audio from './audio.js';
 import { el, clear } from './ui.js';
 
+import * as welcome from './screens/welcome.js';
+import * as profiles from './screens/profiles.js';
+import * as newPlayer from './screens/new-player.js';
+import * as levels from './screens/levels.js';
+import * as path from './screens/path.js';
+
 const routes = new Map();
 let mount = null;
 let currentCleanup = null;
@@ -40,7 +46,19 @@ async function render() {
     currentCleanup = null;
   }
 
-  const renderer = routes.get(name) || routes.get(await defaultRoute());
+  let renderer = routes.get(name);
+
+  // An unknown or stale hash should land on the home screen AND say so in the
+  // URL, so a refresh does not render something the address bar disagrees with.
+  if (!renderer) {
+    const fallback = await defaultRoute();
+    if (name !== fallback && routes.has(fallback)) {
+      window.location.replace(`#/${fallback}`);
+      return;
+    }
+    renderer = routes.get(fallback);
+  }
+
   clear(mount);
 
   if (!renderer) {
@@ -72,8 +90,17 @@ async function defaultRoute() {
   return profiles.length === 0 ? 'welcome' : 'profiles';
 }
 
+function registerScreens() {
+  route('welcome', welcome.render);
+  route('profiles', profiles.render);
+  route('new-player', newPlayer.render);
+  route('levels', levels.render);
+  route('path', path.render);
+}
+
 export async function start(mountNode) {
   mount = mountNode;
+  registerScreens();
 
   window.addEventListener('hashchange', render);
 

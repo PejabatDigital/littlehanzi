@@ -11,7 +11,12 @@ function context() {
   if (!ctx) {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return null;
-    ctx = new Ctx();
+    try {
+      ctx = new Ctx();
+    } catch (err) {
+      console.warn('[audio] no AudioContext available', err);
+      return null;
+    }
   }
   return ctx;
 }
@@ -20,33 +25,43 @@ export function isUnlocked() {
   return unlocked && ctx && ctx.state === 'running';
 }
 
-/* MUST be called from inside a user gesture handler (tap on Start or a profile). */
+/* Never let a hung audio promise stall the UI. resume() can sit unresolved
+   when the browser will not allow playback at all. */
+function withTimeout(promise, ms) {
+  return Promise.race([
+    Promise.resolve(promise).catch(() => false),
+    new Promise((resolve) => setTimeout(() => resolve(false), ms)),
+  ]);
+}
+
+/* MUST be called from inside a user gesture handler (tap on Start or a profile).
+   The silent buffer is started synchronously, before any await, because iOS
+   only honours it while the gesture is still on the stack. Callers must not
+   depend on the result to navigate. */
 export async function unlock() {
   const c = context();
   if (!c) return false;
+
   try {
-    if (c.state === 'suspended') await c.resume();
-    // A silent buffer is what actually convinces iOS that audio is allowed.
     const silent = c.createBuffer(1, 1, 22050);
     const src = c.createBufferSource();
     src.buffer = silent;
     src.connect(c.destination);
     src.start(0);
-    unlocked = true;
-    return true;
   } catch (err) {
-    console.warn('[audio] unlock failed', err);
-    return false;
+    console.warn('[audio] silent buffer failed', err);
   }
+
+  if (c.state === 'suspended') await withTimeout(c.resume(), 1000);
+  unlocked = c.state === 'running';
+  return unlocked;
 }
 
 /* iOS suspends the context when the tab goes to the background. */
 export async function resumeIfNeeded() {
   const c = context();
   if (!c) return false;
-  if (c.state === 'suspended') {
-    try { await c.resume(); } catch (err) { return false; }
-  }
+  if (c.state === 'suspended') await withTimeout(c.resume(), 1000);
   return c.state === 'running';
 }
 
@@ -158,4 +173,30 @@ export async function playTryAgain() {
 export async function playTap() {
   await resumeIfNeeded();
   tone({ freq: 880, start: 0, duration: 0.05, peak: 0.07, type: 'triangle' });
+}
+
+/* ---------------- spoken prompts ----------------
+   Screen titles have a speaker button in the design, but there is no
+   recorded prompt audio yet. Web Speech reads them aloud where it exists;
+   where it does not, callers hide the button rather than show a dead one. */
+
+export function canSpeak() {
+  return typeof window !== 'undefined'
+    && 'speechSynthesis' in window
+    && typeof window.SpeechSynthesisUtterance === 'function';
+}
+
+export function speak(text, { lang = 'en-GB', rate = 0.9 } = {}) {
+  if (!canSpeak() || !text) return false;
+  try {
+    window.speechSynthesis.cancel();
+    const u = new window.SpeechSynthesisUtterance(text);
+    u.lang = lang;
+    u.rate = rate;
+    window.speechSynthesis.speak(u);
+    return true;
+  } catch (err) {
+    console.warn('[audio] speak failed', err);
+    return false;
+  }
 }

@@ -1,0 +1,142 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Little Hanzi — screens test</title>
+<link rel="stylesheet" href="css/tokens.css"><link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/components.css">
+<style>
+  body { margin: 0; padding: 32px 24px 80px; background: var(--color-bg-app);
+         color: var(--color-text-primary); font-family: var(--font-ui); font-weight: 600;
+         overflow: auto; -webkit-user-select: auto; user-select: auto; }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 36px; font-weight: 800; margin: 0 0 4px; }
+  .sub { color: var(--color-text-secondary); font-size: 15px; font-weight: 700; margin: 0 0 24px; line-height: 1.6; }
+  .sub a { color: var(--color-action-audio-edge); font-weight: 800; }
+  #summary { padding: 20px 24px; border-radius: var(--radius-lg); font-size: 24px; font-weight: 800; margin-bottom: 24px; }
+  #summary.pass { background: var(--color-feedback-correct-soft); color: var(--color-feedback-correct-edge); border: 3px solid var(--color-feedback-correct); }
+  #summary.fail { background: var(--color-feedback-try-again-soft); border: 3px solid var(--color-feedback-try-again); }
+  pre { font-family: ui-monospace, monospace; font-size: 13px; line-height: 1.8; white-space: pre-wrap;
+        background: var(--color-bg-surface); padding: 20px; border-radius: var(--radius-md); margin: 0; }
+  /* The app renders off-screen; the screens test only inspects its DOM. */
+  #app { position: fixed; left: -9999px; top: 0; width: 1194px; height: 834px; }
+</style>
+</head><body><div class="wrap">
+  <h1>Screens test</h1>
+  <p class="sub">Drives screens 01-05 for real: creates a player, picks a level, walks the path.
+  <strong>This wipes saved profiles on this device.</strong>
+  <a href="tests.html">Engine tests</a> · <a href="components.html">Components</a> · <a href="index.html">App</a></p>
+  <div id="summary"></div>
+  <pre id="log"></pre>
+</div>
+<div id="app" aria-hidden="true"></div>
+<script type="module">
+import * as storage from './js/storage.js';
+import { start, go, parseHash } from './js/app.js';
+
+const out = [];
+const errs = [];
+window.addEventListener('error', e => errs.push('window.error: ' + (e.error && e.error.stack || e.message)));
+window.addEventListener('unhandledrejection', e => errs.push('unhandled: ' + (e.reason && e.reason.stack || e.reason)));
+const ok = (name, cond, extra='') => out.push(`${cond ? 'PASS' : 'FAIL'}  ${name}${cond ? '' : '  <- ' + extra}`);
+const app = document.getElementById('app');
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
+const nav = async (h) => { location.hash = h; await wait(220); };
+
+try {
+  await storage._clearAll();
+  localStorage.removeItem('lh:v1:progress:test');
+
+  // --- 01 Welcome: no profiles yet ---
+  location.hash = '';
+  await start(app);
+  await wait(200);
+  ok('welcome renders wordmark', app.textContent.includes('小汉字'), app.textContent.slice(0,60));
+  ok('welcome has Start', app.textContent.includes('Start'));
+  ok('welcome shows 3 avatars', app.querySelectorAll('.avatar').length === 3, app.querySelectorAll('.avatar').length);
+
+  // --- 03 New player ---
+  await nav('#/new-player');
+  ok('new-player title', app.textContent.includes('New player'));
+  ok('new-player has 7 age buttons', app.querySelectorAll('.age-btn').length === 7, app.querySelectorAll('.age-btn').length);
+  ok('new-player has 3 art picks', app.querySelectorAll('.avatar-pick').length === 3, app.querySelectorAll('.avatar-pick').length);
+  ok('new-player has 5 swatches', app.querySelectorAll('.swatch').length === 5, app.querySelectorAll('.swatch').length);
+  const nextBtn = [...app.querySelectorAll('.btn')].find(b => b.textContent.includes('Next'));
+  ok('Next starts disabled', nextBtn && nextBtn.disabled, nextBtn && nextBtn.disabled);
+  const input = app.querySelector('.input');
+  input.value = 'Mei';
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  await wait(60);
+  ok('Next enables after a name', !nextBtn.disabled);
+  ok('preview shows the name', app.querySelector('.preview__name').textContent === 'Mei', app.querySelector('.preview__name').textContent);
+  app.querySelectorAll('.age-btn')[5].click();   // age 8
+  app.querySelectorAll('.swatch')[2].click();    // sky
+  app.querySelectorAll('.avatar-pick')[1].click(); // bunny
+  await wait(60);
+  ok('age chip updates', app.querySelector('.age-chip').textContent.includes('8'), app.querySelector('.age-chip').textContent);
+  ok('preview avatar updates', app.querySelector('.preview .avatar').dataset.color === 'sky', app.querySelector('.preview .avatar').dataset.color);
+
+  nextBtn.click();
+  await wait(260);
+
+  // --- 04 Pick a level ---
+  ok('levels screen reached', app.textContent.includes('Pick a level'), parseHash().name);
+  const cards = app.querySelectorAll('.level-card');
+  ok('9 level cards', cards.length === 9, cards.length);
+  ok('A1 is available', cards[0].classList.contains('is-available'));
+  ok('A1 shows 30 字', cards[0].textContent.includes('30') && cards[0].textContent.includes('字'), cards[0].textContent);
+  ok('A2 is locked', cards[1].disabled === true, cards[1].disabled);
+  ok('8 locked levels', [...cards].filter(c => c.disabled).length === 8, [...cards].filter(c => c.disabled).length);
+
+  [...app.querySelectorAll('.btn')].find(b => b.textContent.includes('Start')).click();
+  await wait(300);
+
+  // --- 05 Level path ---
+  ok('path screen reached', parseHash().name === 'path', parseHash().name);
+  const stations = app.querySelectorAll('.station');
+  ok('8 stations', stations.length === 8, stations.length);
+  ok('station 1 is current', stations[0].classList.contains('is-current'));
+  ok('station 2 is locked', stations[1].classList.contains('is-locked'));
+  ok('station 8 is the level check', stations[7].classList.contains('station--check'));
+  ok('Go bubble on the current stop', app.querySelectorAll('.go-bubble').length === 1, app.querySelectorAll('.go-bubble').length);
+  ok('trail is drawn', (app.querySelector('.path__trail path').getAttribute('d') || '').length > 40, app.querySelector('.path__trail path').getAttribute('d'));
+  ok('player name in header', app.querySelector('.player__name').textContent === 'Mei');
+  ok('level chip shows A1', app.querySelector('.level-chip').textContent === 'A1');
+
+  // profile actually persisted
+  const saved = await storage.getProfiles();
+  ok('one profile saved', saved.length === 1, saved.length);
+  ok('profile has age 8', saved[0].age === 8, saved[0].age);
+  ok('profile avatar saved', saved[0].avatar.art === 'bunny' && saved[0].avatar.color === 'sky', JSON.stringify(saved[0].avatar));
+  ok('profile level A1', saved[0].levelId === 'A1', saved[0].levelId);
+
+  // --- 02 Who's playing ---
+  await nav('#/profiles');
+  ok('profiles screen title', app.textContent.includes("Who's playing?"));
+  ok('1 profile card + add', app.querySelectorAll('.profile-card').length === 2, app.querySelectorAll('.profile-card').length);
+  ok('add card present', app.querySelectorAll('.profile-card--add').length === 1);
+
+  // --- progress drives station state ---
+  await storage.saveProgress(saved[0].id, 'A1', { completedStations: [1,2], unlockedStation: 3, passed: false, words: {} });
+  await nav('#/path?level=A1');
+  const st = app.querySelectorAll('.station');
+  ok('stations 1-2 completed', st[0].classList.contains('is-completed') && st[1].classList.contains('is-completed'));
+  ok('station 3 is current', st[2].classList.contains('is-current'));
+  ok('station 4 still locked', st[3].classList.contains('is-locked'));
+
+  // --- unknown route falls back cleanly ---
+  await nav('#/station?level=A1&n=3');
+  ok('unknown route redirects home', parseHash().name === 'profiles', parseHash().name);
+  ok('unknown route renders the home screen', app.textContent.includes("Who's playing?"));
+
+  // --- back button works from a deep screen ---
+  await nav('#/path?level=A1');
+  await nav('#/levels');
+  ok('levels reachable with an active profile', app.textContent.includes('Pick a level'));
+
+} catch (err) {
+  out.push('FAIL  threw: ' + (err && err.stack || err));
+}
+
+const failed = out.filter(l => l.startsWith('FAIL')).length;
+document.getElementById('log').textContent = out.join('\n') + (errs.length ? '\n\nERRORS:\n' + errs.join('\n') : '');
+const box = document.getElementById('summary');
+box.className = failed ? 'fail' : 'pass';
+box.textContent = failed ? `${failed} of ${out.length} failed` : `All ${out.length} checks passed`;
+document.title = failed ? `${failed} FAILED of ${out.length}` : `ALL ${out.length} PASSED`;
+</script></body></html>

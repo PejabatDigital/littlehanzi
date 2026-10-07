@@ -60,8 +60,10 @@ The Figma file has 4 pages: **Cover**, **Foundations** (tokens, type, spacing, r
 /js/icons.js             GENERATED from assets/icons/*.svg — do not hand-edit the paths
 /js/ui.js                DOM builders, one per Figma component
 /js/tests/engine-tests.js  engine assertions, run by tests.html and Node
+/js/session.js           in-memory only (draft profile, current station run)
 /components.html         component gallery (all variants + audio bench)
 /tests.html              engine test runner
+/screens-test.html       drives screens 01-05 for real (WIPES saved profiles)
 /assets/avatars/*.svg    exported from Figma Components → Avatar Art
 /docs/LittleHanzi_Brief.md
 ```
