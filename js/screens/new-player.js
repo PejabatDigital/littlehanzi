@@ -133,7 +133,6 @@ export async function render(mount, params = {}) {
   function refreshNext() {
     const ok = draft.name.trim().length > 0;
     next.disabled = !ok;
-    next.classList.toggle('btn--primary', true);
   }
 
   paintPreview();

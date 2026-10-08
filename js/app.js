@@ -131,8 +131,9 @@ async function render() {
 
 /* First launch shows Welcome; afterwards the app opens on "Who's playing?". */
 async function defaultRoute() {
-  const profiles = await storage.getProfiles();
-  return profiles.length === 0 ? 'welcome' : 'profiles';
+  // Named 'saved' because 'profiles' is the screen module imported above.
+  const saved = await storage.getProfiles();
+  return saved.length === 0 ? 'welcome' : 'profiles';
 }
 
 function registerScreens() {

@@ -2,7 +2,7 @@
    The Figma trail is a fixed 900x160 landscape vector. It is redrawn here
    instead so the same path can run vertically on a phone. */
 
-import { el, clear, Avatar, StationNode, GoBubble, RoundButton } from '../ui.js';
+import { el, Avatar, StationNode, GoBubble, RoundButton } from '../ui.js';
 import * as storage from '../storage.js';
 import { getLevelMeta } from '../data.js';
 import { STATIONS, stationState, LEVEL_CHECK_STATION } from '../engine/path.js';
