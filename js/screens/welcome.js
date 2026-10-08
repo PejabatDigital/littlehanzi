@@ -24,9 +24,9 @@ export async function render(mount) {
       el('h1', { class: 'wordmark', text: '小汉字' }),
       el('p', { class: 't-title', text: 'Little Hanzi' }),
       el('div', { class: 'row welcome-friends' }, [
-        Avatar({ art: 'panda', color: 'persimmon', size: 'l' }),
-        Avatar({ art: 'bunny', color: 'sky', size: 'l' }),
-        Avatar({ art: 'cat', color: 'jade', size: 'l' }),
+        Avatar({ art: 'lion', color: 'sunshine', size: 'l' }),
+        Avatar({ art: 'panda', color: 'sky', size: 'l' }),
+        Avatar({ art: 'koala', color: 'jade', size: 'l' }),
       ]),
       start,
     ]),

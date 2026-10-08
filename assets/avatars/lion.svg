@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" fill="none">
+<title>Lion</title>
+<defs><clipPath id="lh-lion"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+<g clip-path="url(#lh-lion)">
+<g transform="translate(50 50) scale(1.08) translate(-50 -50)" stroke="#2B2633" stroke-width="2.41" stroke-linejoin="round" stroke-linecap="round">
+<path d="M6 104 C8 86 22 76 50 76 C78 76 92 86 94 104Z" fill="#FDB91E"/>
+<path d="M50.0 13.5 Q53.3 7.1 59.2 7.5 Q63.0 12.3 65.0 16.9 Q70.7 12.6 75.9 15.6 Q77.2 21.5 77.0 26.5 Q84.0 25.1 87.4 30.0 Q86.0 35.9 83.6 40.3 Q90.6 42.1 91.5 48.0 Q86.9 52.7 82.1 55.3 Q85.8 59.3 84.3 64.5 Q78.7 66.6 73.8 67.0 Q76.9 73.2 73.3 77.2 Q68.4 78.2 64.5 78.1 Q66.3 90.4 60.2 92.8 Q54.2 90.5 50.0 87.5 Q46.3 93.3 39.8 92.8 Q36.4 85.3 35.5 78.1 Q31.4 79.8 26.7 77.2 Q25.7 71.6 26.2 67.0 Q18.9 69.0 15.7 64.5 Q16.3 59.3 17.9 55.3 Q9.4 53.9 8.5 48.0 Q12.3 43.2 16.4 40.3 Q10.9 35.7 12.6 30.0 Q18.1 27.4 23.0 26.5 Q20.1 19.9 24.1 15.6 Q30.2 15.6 35.0 16.9 Q35.2 9.7 40.8 7.5 Q46.3 10.2 50.0 13.5 Z" fill="#E2651A"/>
+<circle cx="31" cy="28" r="8" fill="#FDB91E"/><circle cx="32" cy="29.5" r="4.2" fill="#FDD77A" stroke-width="1.2"/>
+<circle cx="69" cy="28" r="8" fill="#FDB91E"/><circle cx="68" cy="29.5" r="4.2" fill="#FDD77A" stroke-width="1.2"/>
+<path d="M50 27 C64 27 72 36 72 49 C72 62 63 72 50 72 C37 72 28 62 28 49 C28 36 36 27 50 27Z" fill="#FDB91E"/>
+<path d="M50 58 C44.5 55 36.5 57 36.5 63.5 C36.5 69 42 71.5 46.5 70.5 C47.5 74 52.5 74 53.5 70.5 C58 71.5 63.5 69 63.5 63.5 C63.5 57 55.5 55 50 58Z" fill="#FDF3D2"/>
+<path d="M50 47 L50 53.5" stroke-width="2"/>
+<path d="M43.5 54.5 Q50 53.1 56.5 54.5 Q54.225 60.5 50 60.5 Q45.775 60.5 43.5 54.5Z" fill="#2B2633"/><path d="M50 60.5 L50 63.5 M50 63.5 Q47 66.5 44 64.7 M50 63.5 Q53 66.5 56 64.7" stroke-width="2"/>
+<circle cx="41.5" cy="47" r="2.7" fill="#2B2633" stroke="none"/><circle cx="58.5" cy="47" r="2.7" fill="#2B2633" stroke="none"/>
+</g>
+</g>
+</svg>

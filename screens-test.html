@@ -29,6 +29,7 @@
 import * as storage from './js/storage.js';
 import { start, go, parseHash } from './js/app.js';
 import { getStationRun } from './js/session.js';
+import { AVATAR_ART } from './js/ui.js';
 
 const out = [];
 const errs = [];
@@ -55,7 +56,7 @@ try {
   await nav('#/new-player');
   ok('new-player title', app.textContent.includes('New player'));
   ok('new-player has 7 age buttons', app.querySelectorAll('.age-btn').length === 7, app.querySelectorAll('.age-btn').length);
-  ok('new-player has 3 art picks', app.querySelectorAll('.avatar-pick').length === 3, app.querySelectorAll('.avatar-pick').length);
+  ok(`new-player has ${AVATAR_ART.length} art picks`, app.querySelectorAll('.avatar-pick').length === AVATAR_ART.length, app.querySelectorAll('.avatar-pick').length);
   ok('new-player has 5 swatches', app.querySelectorAll('.swatch').length === 5, app.querySelectorAll('.swatch').length);
   const nextBtn = [...app.querySelectorAll('.btn')].find(b => b.textContent.includes('Next'));
   ok('Next starts disabled', nextBtn && nextBtn.disabled, nextBtn && nextBtn.disabled);
@@ -67,7 +68,7 @@ try {
   ok('preview shows the name', app.querySelector('.preview__name').textContent === 'Mei', app.querySelector('.preview__name').textContent);
   app.querySelectorAll('.age-btn')[5].click();   // age 8
   app.querySelectorAll('.swatch')[2].click();    // sky
-  app.querySelectorAll('.avatar-pick')[1].click(); // bunny
+  app.querySelectorAll('.avatar-pick')[AVATAR_ART.indexOf('bunny')].click(); // bunny
   await wait(60);
   ok('age chip updates', app.querySelector('.age-chip').textContent.includes('8'), app.querySelector('.age-chip').textContent);
   ok('preview avatar updates', app.querySelector('.preview .avatar').dataset.color === 'sky', app.querySelector('.preview .avatar').dataset.color);

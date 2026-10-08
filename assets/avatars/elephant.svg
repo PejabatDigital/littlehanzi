@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" fill="none">
+<title>Elephant</title>
+<defs><clipPath id="lh-elephant"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+<g clip-path="url(#lh-elephant)">
+<g transform="translate(50 46) scale(1.15) translate(-50 -46)" stroke="#2B2633" stroke-width="2.26" stroke-linejoin="round" stroke-linecap="round">
+<path d="M14 104 C16 86 28 78 50 78 C72 78 84 86 86 104Z" fill="#7B91A1"/>
+<path d="M37 28 C25 17 6 22 4 42 C2 60 12 70 27 71 C34 72 38 66 40 58Z" fill="#7B91A1"/>
+<path d="M63 28 C75 17 94 22 96 42 C98 60 88 70 73 71 C66 72 62 66 60 58Z" fill="#7B91A1"/>
+<path d="M50 17 C65 17 72 29 71 44 C70 56 64 64 57 67 L43 67 C36 64 30 56 29 44 C28 29 35 17 50 17Z" fill="#9EB1BF"/>
+<path d="M43.5 64 C40 66.5 37.5 71 36.5 75 C40 75 43.5 72 45 68.5Z" fill="#FFFFFF" stroke-width="2"/>
+<path d="M56.5 64 C60 66.5 62.5 71 63.5 75 C60 75 56.5 72 55 68.5Z" fill="#FFFFFF" stroke-width="2"/>
+<path d="M43 50 C43 66 43 80 44 90 C44.5 95 47 97.5 50 97.5 C53 97.5 55.5 95 56 90 C57 80 57 66 57 50Z" fill="#9EB1BF" stroke="none"/>
+<path d="M43 55 C43 66 43 80 44 90 C44.5 95 47 97.5 50 97.5 C53 97.5 55.5 95 56 90 C57 80 57 66 57 55" />
+<path d="M46 72 Q50 74 54 72 M45.8 78.5 Q50 80.5 54.2 78.5 M46.2 85 Q50 87 53.8 85" stroke-width="1.6"/>
+<circle cx="40.5" cy="45" r="2.7" fill="#2B2633" stroke="none"/><circle cx="59.5" cy="45" r="2.7" fill="#2B2633" stroke="none"/>
+</g>
+</g>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" fill="none">
+<title>Owl</title>
+<defs><clipPath id="lh-owl"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+<g clip-path="url(#lh-owl)">
+<g stroke="#2B2633" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+<path d="M14 104 C10 80 14 56 18 38 L16 10 L36 22 C45 19.5 55 19.5 64 22 L84 10 L82 38 C86 56 90 80 86 104Z" fill="#B77D47"/>
+<path d="M18 56 C6 66 4 88 8 104 L28 104 C30 86 28 68 18 56Z" fill="#783D17"/>
+<path d="M82 56 C94 66 96 88 92 104 L72 104 C70 86 72 68 82 56Z" fill="#783D17"/>
+<circle cx="36" cy="42" r="13.5" fill="#F7EDB8"/><circle cx="64" cy="42" r="13.5" fill="#F7EDB8"/>
+<circle cx="37.5" cy="42" r="5.8" fill="#2B2633" stroke="none"/><circle cx="62.5" cy="42" r="5.8" fill="#2B2633" stroke="none"/>
+<circle cx="39.5" cy="40" r="2" fill="#FFFFFF" stroke="none"/><circle cx="64.5" cy="40" r="2" fill="#FFFFFF" stroke="none"/>
+<path d="M44.5 52 Q50 50.5 55.5 52 L50 63Z" fill="#FEC416" stroke-width="2.2"/>
+<path d="M33 72 Q37.5 77 42 72 M45.5 72 Q50 77 54.5 72 M58 72 Q62.5 77 67 72 M39 83 Q43.5 88 48 83 M52 83 Q56.5 88 61 83" stroke-width="2.2"/>
+</g>
+</g>
+</svg>

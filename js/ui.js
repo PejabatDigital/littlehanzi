@@ -118,15 +118,24 @@ export function SpeakerCard({ state = 'face-down', onClick, ariaLabel = 'Play wo
 
 /* ---------------- Avatar ---------------- */
 
-export const AVATAR_ART = ['panda', 'bunny', 'cat'];
+export const AVATAR_ART = [
+  'panda', 'lion', 'elephant', 'monkey', 'giraffe', 'deer', 'bear',
+  'fox', 'koala', 'penguin', 'owl', 'bunny', 'cat',
+];
 export const AVATAR_COLORS = ['persimmon', 'jade', 'sky', 'sunshine', 'plum'];
 
+/* Full-circle art (drawn edge to edge on a 100x100 circle) fills the avatar;
+   the original bunny and cat are inset heads, drawn at 72%. The circle
+   behind every animal comes from the chosen colour, never the SVG. */
+const INSET_ART = new Set(['bunny', 'cat']);
+
 export function Avatar({ art = 'panda', color = 'persimmon', size = 'l' } = {}) {
+  const known = AVATAR_ART.includes(art) ? art : 'panda';
   return el('span', {
-    class: `avatar avatar--${size}`,
-    dataset: { color, art },
+    class: `avatar avatar--${size}${INSET_ART.has(known) ? '' : ' avatar--full'}`,
+    dataset: { color, art: known },
   }, [
-    el('img', { src: `assets/avatars/${art}.svg`, alt: '', width: 64, height: 64 }),
+    el('img', { src: `assets/avatars/${known}.svg`, alt: '', width: 64, height: 64 }),
   ]);
 }
 

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" fill="none">
+<title>Koala</title>
+<defs><clipPath id="lh-koala"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+<g clip-path="url(#lh-koala)">
+<g transform="translate(50 52) scale(1.12) translate(-50 -52)" stroke="#2B2633" stroke-width="2.32" stroke-linejoin="round" stroke-linecap="round">
+<path d="M18 104 C20 88 32 80 50 80 C68 80 80 88 82 104Z" fill="#A9ADB8"/>
+<path d="M40 84 L40 104 L60 104 L60 84 C55 86.5 45 86.5 40 84Z" fill="#EBECEB" stroke-width="1.8"/>
+<circle cx="24" cy="33" r="15" fill="#A9ADB8"/><circle cx="21.5" cy="35" r="8.5" fill="#FDFEFD" stroke-width="1.6"/>
+<circle cx="76" cy="33" r="15" fill="#A9ADB8"/><circle cx="78.5" cy="35" r="8.5" fill="#FDFEFD" stroke-width="1.6"/>
+<path d="M50 22 C66 22 74 34 74 50 C74 66 64 78 50 78 C36 78 26 66 26 50 C26 34 34 22 50 22Z" fill="#A9ADB8"/>
+<path d="M50 44 C55 44 57.5 48 57.5 53 C57.5 60 54.5 64.5 50 64.5 C45.5 64.5 42.5 60 42.5 53 C42.5 48 45 44 50 44Z" fill="#2B2633"/>
+<path d="M44.5 68.5 Q47.3 71.2 50 69 Q52.7 71.2 55.5 68.5" stroke-width="1.8"/>
+<circle cx="37.5" cy="50" r="2.7" fill="#2B2633" stroke="none"/><circle cx="62.5" cy="50" r="2.7" fill="#2B2633" stroke="none"/>
+</g>
+</g>
+</svg>

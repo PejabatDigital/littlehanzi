@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" fill="none">
+<title>Bear</title>
+<defs><clipPath id="lh-bear"><circle cx="50" cy="50" r="50"/></clipPath></defs>
+<g clip-path="url(#lh-bear)">
+<g transform="translate(50 52) scale(1.18) translate(-50 -52)" stroke="#2B2633" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+<path d="M6 104 C8 84 24 76 50 76 C76 76 92 84 94 104Z" fill="#7C411D"/>
+<path d="M28 104 C30 92 40 88 50 88 C60 88 70 92 72 104Z" fill="#B97031" stroke-width="2"/>
+<circle cx="26" cy="27" r="9.5" fill="#7C411D"/><circle cx="26" cy="27" r="5" fill="#A8622F" stroke-width="1.8"/>
+<circle cx="74" cy="27" r="9.5" fill="#7C411D"/><circle cx="74" cy="27" r="5" fill="#A8622F" stroke-width="1.8"/>
+<path d="M50 21 C70 21 82 33 82 52 C82 68 70 80 50 80 C30 80 18 68 18 52 C18 33 30 21 50 21Z" fill="#7C411D"/>
+<ellipse cx="50" cy="66" rx="13" ry="11" fill="#D9A06E"/>
+<path d="M45 60 Q50 58.6 55 60 Q53.25 64.6 50 64.6 Q46.75 64.6 45 60Z" fill="#2B2633"/><path d="M50 64.6 L50 67.6 M50 67.6 Q47 70.6 44 68.8 M50 67.6 Q53 70.6 56 68.8" stroke-width="2"/>
+<circle cx="40" cy="50" r="2.7" fill="#2B2633" stroke="none"/><circle cx="60" cy="50" r="2.7" fill="#2B2633" stroke="none"/>
+</g>
+</g>
+</svg>
