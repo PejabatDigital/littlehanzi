@@ -10,10 +10,19 @@ import * as profiles from './screens/profiles.js';
 import * as newPlayer from './screens/new-player.js';
 import * as levels from './screens/levels.js';
 import * as path from './screens/path.js';
+import * as station from './screens/station.js';
+import * as done from './screens/done.js';
 
 const routes = new Map();
 let mount = null;
 let currentCleanup = null;
+/* Screens render asynchronously (storage, data, audio preload). Two hash
+   changes in quick succession must never interleave, or both append and the
+   older screen stays wired to events. Renders are therefore serialised: if
+   one is asked for while another is running, it is queued and runs after,
+   reading the hash fresh so we always settle on the latest route. */
+let rendering = false;
+let renderPending = false;
 
 export function route(name, renderer) {
   routes.set(name, renderer);
@@ -23,7 +32,9 @@ export function go(name, params = {}) {
   const query = Object.entries(params)
     .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
     .join('&');
-  window.location.hash = query ? `#/${name}?${query}` : `#/${name}`;
+  const next = query ? `#/${name}?${query}` : `#/${name}`;
+  if (window.location.hash === next) { render(); return; }
+  window.location.hash = next;
 }
 
 export function parseHash(hash = window.location.hash) {
@@ -38,13 +49,25 @@ export function parseHash(hash = window.location.hash) {
   return { name: name || '', params };
 }
 
-async function render() {
+function runCleanup(fn) {
+  if (typeof fn !== 'function') return;
+  try { fn(); } catch (err) { console.warn('[router] cleanup failed', err); }
+}
+
+function errorScreen(message) {
+  return el('div', { class: 'screen' }, [
+    el('div', { class: 'screen__body' }, [
+      el('p', { class: 't-title t-center', text: 'Something went wrong' }),
+      el('p', { class: 't-body t-center t-muted', text: message }),
+    ]),
+  ]);
+}
+
+async function renderOnce() {
   const { name, params } = parseHash();
 
-  if (typeof currentCleanup === 'function') {
-    try { currentCleanup(); } catch (err) { console.warn('[router] cleanup failed', err); }
-    currentCleanup = null;
-  }
+  runCleanup(currentCleanup);
+  currentCleanup = null;
 
   let renderer = routes.get(name);
 
@@ -54,15 +77,14 @@ async function render() {
     const fallback = await defaultRoute();
     if (name !== fallback && routes.has(fallback)) {
       window.location.replace(`#/${fallback}`);
+      renderPending = true;
       return;
     }
     renderer = routes.get(fallback);
   }
 
-  clear(mount);
-
   if (!renderer) {
-    // No screen is registered for this route yet.
+    clear(mount);
     mount.append(el('div', { class: 'screen' }, [
       el('div', { class: 'screen__body' }, [
         el('p', { class: 't-title t-center', text: 'Nothing here yet' }),
@@ -72,15 +94,36 @@ async function render() {
     return;
   }
 
+  // Build off-document, then swap in, so a half-built screen is never visible.
+  const host = document.createElement('div');
+  let cleanup = null;
   try {
-    currentCleanup = await renderer(mount, params);
+    cleanup = await renderer(host, params);
   } catch (err) {
     console.error('[router] screen failed', err);
     clear(mount);
-    mount.append(el('div', { class: 'screen' }, [
-      el('p', { class: 't-title t-center', text: 'Something went wrong' }),
-      el('p', { class: 't-body t-center t-muted', text: String(err.message || err) }),
-    ]));
+    mount.append(errorScreen(String(err.message || err)));
+    return;
+  }
+
+  // A screen that redirected (set the hash itself) renders nothing.
+  if (renderPending && !host.firstChild) { runCleanup(cleanup); return; }
+
+  clear(mount);
+  while (host.firstChild) mount.append(host.firstChild);
+  currentCleanup = cleanup;
+}
+
+async function render() {
+  if (rendering) { renderPending = true; return; }
+  rendering = true;
+  try {
+    do {
+      renderPending = false;
+      await renderOnce();
+    } while (renderPending);
+  } finally {
+    rendering = false;
   }
 }
 
@@ -96,6 +139,8 @@ function registerScreens() {
   route('new-player', newPlayer.render);
   route('levels', levels.render);
   route('path', path.render);
+  route('station', station.render);
+  route('done', done.render);
 }
 
 export async function start(mountNode) {

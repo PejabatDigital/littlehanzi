@@ -52,7 +52,7 @@ The Figma file has 4 pages: **Cover**, **Foundations** (tokens, type, spacing, r
 /js/activities/identification.js
 /js/activities/pinyin-match.js
 /js/activities/memory-match.js
-/js/screens/*.js         welcome, profiles, new-player, levels, path, done, level-result
+/js/screens/*.js         welcome, profiles, new-player, levels, path, station, done, level-result
 /data/levels.json        [{ "id": "A1", "file": "data/a1.json", "available": true }, { "id": "A2", "available": false }, …]
 /data/a1.json            30 words, shape in the brief (§3)
 /audio/a1/*.mp3          + a1_manifest.json
@@ -207,6 +207,20 @@ Keep this data clean and complete: future stars, scores and rankings will be bui
 - **Unlock** on the first user tap (Welcome Start or a profile card): create/resume the AudioContext and play a silent buffer.
 - **Preload** all audio for a station before it starts. Show a short loading state if needed.
 - Re-resume the context if iOS suspends it (e.g. after the tab was in the background).
+
+## Router contract (easy to break)
+
+- Renders are **serialised**: `render()` queues if one is already running, then
+  re-reads the hash. Never render two screens at once.
+- A screen is built **off-document** and swapped in only when it resolves, so a
+  half-built screen is never visible. Anything that needs real measurements
+  (the path trail) must re-measure after insertion — use a ResizeObserver plus
+  a `requestAnimationFrame`, not a measurement taken during render.
+- A screen renderer returns an optional cleanup function. It MUST tear down
+  timers, observers and audio.
+- **Never block a render on audio.** `audio.unlock()` is fired, not awaited;
+  `preload()` happens after the screen is up, behind a loading state, and is
+  bounded by a timeout. Decoding can silently never call back.
 
 ## Working rules for Claude
 

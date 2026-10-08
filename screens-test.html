@@ -28,6 +28,7 @@
 <script type="module">
 import * as storage from './js/storage.js';
 import { start, go, parseHash } from './js/app.js';
+import { getStationRun } from './js/session.js';
 
 const out = [];
 const errs = [];
@@ -120,7 +121,7 @@ try {
   ok('station 4 still locked', st[3].classList.contains('is-locked'));
 
   // --- unknown route falls back cleanly ---
-  await nav('#/station?level=A1&n=3');
+  await nav('#/not-a-screen');
   ok('unknown route redirects home', parseHash().name === 'profiles', parseHash().name);
   ok('unknown route renders the home screen', app.textContent.includes("Who's playing?"));
 
@@ -128,6 +129,69 @@ try {
   await nav('#/path?level=A1');
   await nav('#/levels');
   ok('levels reachable with an active profile', app.textContent.includes('Pick a level'));
+
+  // --- 06 This or That: play station 1 right through ---
+  await storage.saveProgress(saved[0].id, 'A1', { completedStations: [], unlockedStation: 1, passed: false, words: {} });
+  await nav('#/station?level=A1&n=1');
+  for (let i = 0; i < 40 && !app.querySelector('.char-card'); i += 1) await wait(150);
+
+  ok('station shows a progress bar', !!app.querySelector('.progress'));
+  ok('station shows the This or That badge', app.querySelector('.activity-badge')?.dataset.activity === 'this-or-that', app.querySelector('.activity-badge')?.dataset.activity);
+  ok('two choice cards', app.querySelectorAll('.char-card').length === 2, app.querySelectorAll('.char-card').length);
+  ok('big replay speaker present', !!app.querySelector('.round-btn--l'));
+  ok('cards carry their word id', [...app.querySelectorAll('.char-card')].every(c => c.dataset.wordId), 'a card had no data-word-id');
+
+  // Answer by always tapping the first card. The cards are shuffled, so this
+  // produces a realistic mix of right and wrong without the test needing to
+  // know the answer. The run is the source of truth for what happened.
+  let turns = 0, sawWrong = false, sawCorrect = false, sawBanner = false;
+  while (turns++ < 30) {
+    if (parseHash().name !== 'station') break;
+    const cards = [...app.querySelectorAll('.char-card')];
+    if (!cards.length) { await wait(200); continue; }
+    const before = getStationRun()?.answers.length ?? 0;
+    cards[0].click();
+    await wait(140);
+    if (app.querySelector('.banner')) sawBanner = true;
+    const run = getStationRun();
+    if (run && run.answers.length > before) {
+      const last = run.answers[run.answers.length - 1];
+      if (last.correct) sawCorrect = true; else sawWrong = true;
+    }
+    await wait(2600);   // longest pause between questions
+  }
+
+  ok('a feedback banner appeared', sawBanner);
+  ok('at least one answer was right', sawCorrect);
+  ok('the station finished', parseHash().name === 'done', parseHash().name + ' after ' + turns + ' turns');
+
+  const afterRun = await storage.getProgress(saved[0].id, 'A1');
+  const seenWords = Object.values(afterRun.words);
+  ok('word stats were written', seenWords.length > 0, seenWords.length);
+  ok('every stat has been seen at least once', seenWords.every(w => w.seen > 0));
+  ok('station 1 is marked completed', afterRun.completedStations.includes(1), JSON.stringify(afterRun.completedStations));
+  ok('station 2 is unlocked', afterRun.unlockedStation === 2, afterRun.unlockedStation);
+  if (sawWrong) {
+    const anyDifficult = seenWords.some(w => w.difficult || w.wrong > 0);
+    ok('a missed word was recorded as wrong', anyDifficult);
+  }
+
+  // --- 12 Well done ---
+  ok('well done screen shown', app.textContent.includes('Well done!'), app.textContent.slice(0, 60));
+  ok('well done has confetti', app.querySelectorAll('.confetti span').length > 8, app.querySelectorAll('.confetti span').length);
+  ok('well done has a hero mark', !!app.querySelector('.hero'));
+  ok('well done offers the path', app.textContent.includes('Path'));
+
+  // --- the path reflects the finished station ---
+  await nav('#/path?level=A1');
+  const after = app.querySelectorAll('.station');
+  ok('station 1 now completed on the path', after[0].classList.contains('is-completed'));
+  ok('station 2 now current on the path', after[1].classList.contains('is-current'));
+
+  // --- locked stations cannot be opened directly ---
+  await nav('#/station?level=A1&n=5');
+  await wait(400);
+  ok('a locked station bounces back to the path', parseHash().name === 'path', parseHash().name);
 
 } catch (err) {
   out.push('FAIL  threw: ' + (err && err.stack || err));

@@ -73,10 +73,13 @@ svg { display: block; }
   flex: none;
 }
 
+/* Equal flexible sides keep whatever sits between them (the title, the
+   progress bar) centred on the screen, whatever the sides contain. */
 .screen__header-side {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
+  flex: 1 1 0;
   min-width: var(--size-tap-min);
 }
 .screen__header-side--end { justify-content: flex-end; }

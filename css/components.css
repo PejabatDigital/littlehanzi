@@ -448,14 +448,12 @@
    ============================================================ */
 
 .progress {
-  width: 100%;
-  max-width: 480px;
+  flex: 0 1 480px;
   min-width: 0;
   height: 24px;
   padding: 4px;
   border-radius: var(--radius-full);
   background: var(--color-bg-sunken);
-  flex: 1 1 auto;
 }
 
 .progress__fill {
@@ -590,8 +588,12 @@
   .banner__icon { width: 52px; height: 52px; }
   .banner__icon .icon { width: 28px; height: 28px; }
 
-  .progress { height: 20px; }
+  .progress { height: 20px; flex: 1 1 auto; }
   .progress__fill { height: 12px; }
+  /* A 390px header has to fit home + bar + badge without them colliding. */
+  .screen__header { gap: var(--spacing-sm); }
+  .screen__header-side { min-width: 0; flex: 0 0 auto; }
+  .activity-badge { font-size: 12px; padding: 6px 10px; }
 
   .avatar--xl { --av-size: 132px; }
 }
@@ -805,7 +807,7 @@
 .path__trail path {
   fill: none;
   stroke: var(--color-bg-sunken);
-  stroke-width: 18;
+  stroke-width: 18px;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -859,4 +861,105 @@
   .path { min-height: 620px; }
   .path__trail path { stroke-width: 14; }
   .path__label { display: none; }   /* the header chip already shows the level */
+}
+
+/* ============================================================
+   Activity shell — the frame every activity runs inside.
+   ============================================================ */
+
+.activity {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2xl);
+  position: relative;
+}
+
+/* The activity mounts into this host, which has to centre its own content:
+   being a centred flex item does not centre what is inside it. */
+.activity__host {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  justify-content: safe center;
+  gap: 56px;
+}
+
+/* The banner sits at the bottom of the activity area, over the content. */
+.activity__feedback {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.choices {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 64px;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   Well done (12) — hero mark, confetti, back to the path.
+   ============================================================ */
+
+.hero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  border-radius: var(--radius-full);
+  background: var(--color-feedback-correct);
+  color: var(--color-icon-on-accent);
+  flex: none;
+}
+.hero .icon { width: 112px; height: 112px; }
+
+.hero--try-again { background: var(--color-feedback-try-again); color: var(--color-text-primary); }
+.hero--check { background: var(--color-activity-identification); }
+
+/* Confetti is generated in code, in token colours, at percentage positions so
+   it scatters correctly at any size. The Figma version is pinned to 1194x834. */
+.confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.confetti span {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  opacity: .9;
+}
+.confetti span.bar {
+  width: 22px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+@media (max-width: 560px) {
+  .activity { gap: var(--spacing-lg); }
+  .activity__host { gap: var(--spacing-xl); }
+  .choices { gap: var(--spacing-lg); }
+  .hero { width: 132px; height: 132px; }
+  .hero .icon { width: 72px; height: 72px; }
+  .confetti span { width: 12px; height: 12px; }
+  .confetti span.bar { width: 16px; height: 9px; }
+}
+
+@media (max-height: 460px) {
+  .activity { gap: var(--spacing-lg); }
+  .hero { width: 120px; height: 120px; }
+  .hero .icon { width: 64px; height: 64px; }
 }

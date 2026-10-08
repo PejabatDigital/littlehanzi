@@ -7,6 +7,9 @@ const buffers = new Map();   // url -> AudioBuffer
 const pending = new Map();   // url -> Promise<AudioBuffer>
 let current = null;          // the source currently playing
 
+const DECODE_TIMEOUT_MS = 4000;
+const PRELOAD_TIMEOUT_MS = 8000;
+
 function context() {
   if (!ctx) {
     const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -76,10 +79,15 @@ async function load(url) {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Could not fetch ${url} (${res.status})`);
     const bytes = await res.arrayBuffer();
-    // Safari still wants the callback form of decodeAudioData.
+    // Safari still wants the callback form of decodeAudioData. Neither callback
+    // is guaranteed to fire (a bad file, or no output device), so it is capped
+    // — an un-decodable word must never hang the station.
     const buf = await new Promise((resolve, reject) => {
-      const maybe = c.decodeAudioData(bytes, resolve, reject);
-      if (maybe && typeof maybe.then === 'function') maybe.then(resolve, reject);
+      const bail = setTimeout(() => reject(new Error(`decode timed out: ${url}`)), DECODE_TIMEOUT_MS);
+      const ok = (b) => { clearTimeout(bail); resolve(b); };
+      const fail = (e) => { clearTimeout(bail); reject(e); };
+      const maybe = c.decodeAudioData(bytes, ok, fail);
+      if (maybe && typeof maybe.then === 'function') maybe.then(ok, fail);
     });
     buffers.set(url, buf);
     pending.delete(url);
@@ -91,14 +99,27 @@ async function load(url) {
 }
 
 /* Preload a station's audio. Returns the urls that failed, so a caller can
-   decide whether to carry on (we do — a missing file must not block play). */
-export async function preload(urls) {
+   decide whether to carry on (we do — a missing file must not block play).
+   Bounded overall as well as per file: a station must always start. */
+export async function preload(urls, { timeoutMs = PRELOAD_TIMEOUT_MS } = {}) {
   const unique = [...new Set(urls.filter(Boolean))];
+  if (unique.length === 0) return [];
   const failed = [];
-  await Promise.all(unique.map((u) => load(u).catch((err) => {
+
+  const all = Promise.all(unique.map((u) => load(u).catch((err) => {
     console.warn('[audio] preload failed', u, err);
     failed.push(u);
   })));
+
+  const finished = await Promise.race([
+    all.then(() => true),
+    new Promise((resolve) => setTimeout(() => resolve(false), timeoutMs)),
+  ]);
+
+  if (!finished) {
+    console.warn('[audio] preload timed out; starting anyway');
+    return unique.filter((u) => !buffers.has(u));
+  }
   return failed;
 }
 

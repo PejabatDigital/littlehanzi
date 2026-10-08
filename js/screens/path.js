@@ -43,8 +43,13 @@ export async function render(mount, params) {
 
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('class', 'path__trail');
+  // A 0-100 viewBox with preserveAspectRatio="none" lets the trail be written
+  // in percentages, so nothing has to be measured. non-scaling-stroke keeps
+  // the line an even thickness despite the non-uniform scaling.
+  svg.setAttribute('viewBox', '0 0 100 100');
   svg.setAttribute('preserveAspectRatio', 'none');
   const trail = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  trail.setAttribute('vector-effect', 'non-scaling-stroke');
   svg.append(trail);
 
   const box = el('div', { class: 'path' }, [
@@ -67,24 +72,21 @@ export async function render(mount, params) {
     box.append(stop);
   }
 
-  function place() {
-    const w = box.clientWidth;
-    const h = box.clientHeight;
-    if (!w || !h) return;
-    // Lay the trail along whichever axis is longer: across on a landscape
-    // tablet, down in portrait and on a phone.
-    const wide = w / h >= 1.1 && w >= 720;
+  // Landscape tablets run the trail across; portrait and phones run it down.
+  const wideQuery = window.matchMedia('(min-width: 720px) and (min-aspect-ratio: 11/10)');
 
-    const pts = layout(wide).map((p) => ({ x: p.x * w, y: p.y * h }));
+  function place() {
+    const pts = layout(wideQuery.matches);
     stops.forEach((stop, i) => {
-      stop.style.left = `${pts[i].x}px`;
-      stop.style.top = `${pts[i].y}px`;
+      stop.style.left = `${pts[i].x * 100}%`;
+      stop.style.top = `${pts[i].y * 100}%`;
     });
-    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-    trail.setAttribute('d', trailPath(pts));
+    trail.setAttribute('d', trailPath(pts.map((p) => ({ x: p.x * 100, y: p.y * 100 }))));
   }
 
-  const observer = new ResizeObserver(place);
+  place();
+  const onChange = () => place();
+  wideQuery.addEventListener('change', onChange);
 
   mount.append(el('div', { class: 'screen screen--scroll' }, [
     el('div', { class: 'screen__header' }, [
@@ -104,8 +106,5 @@ export async function render(mount, params) {
     box,
   ]));
 
-  observer.observe(box);
-  place();
-
-  return () => observer.disconnect();
+  return () => wideQuery.removeEventListener('change', onChange);
 }
