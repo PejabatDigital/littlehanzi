@@ -54,7 +54,8 @@ The Figma file has 4 pages: **Cover**, **Foundations** (tokens, type, spacing, r
 /js/activities/identification.js
 /js/activities/pinyin-match.js
 /js/activities/memory-match.js
-/js/screens/*.js         welcome, profiles, new-player, levels, path, station, done, level-result, parents (Grown-ups)
+/js/screens/*.js         welcome, profiles, new-player, levels, path, station, done, parents (Grown-ups)
+                         still to build: level-result (wireframes 13-14)
 /data/levels.json        [{ "id": "A1", "file": "data/a1.json", "available": true }, { "id": "A2", "available": false }, …]
 /data/a1.json            30 words, shape in the brief (§3)
 /audio/a1/*.mp3          + a1_manifest.json
@@ -64,6 +65,7 @@ The Figma file has 4 pages: **Cover**, **Foundations** (tokens, type, spacing, r
 /js/tests/engine-tests.js  engine assertions, run by tests.html and Node
 /js/session.js           in-memory only (draft profile, current station run)
 /components.html         component gallery (all variants + audio bench)
+                         GAP: Dialog and Toggle are not in it yet
 /tests.html              engine test runner
 /screens-test.html       drives screens 01-05 for real (WIPES saved profiles)
 /assets/avatars/*.svg    exported from Figma Components → Avatar Art
@@ -100,6 +102,11 @@ Names match the Figma variables' code syntax exactly. Use semantic tokens in com
   --color-activity-pinyin-match:var(--jade-500);
   --color-activity-memory-match:var(--persimmon-500);
 
+  /* Avatar ramps — one pair per colour, so Avatar() can look them up from
+     stored data rather than branching in JS */
+  --avatar-persimmon-soft:var(--persimmon-100); --avatar-persimmon-ink:var(--persimmon-700);
+  /* …and the same pair for jade, sky, sunshine, plum */
+
   /* Dimensions */
   --spacing-xs:4px; --spacing-sm:8px; --spacing-md:16px; --spacing-lg:24px; --spacing-xl:32px; --spacing-2xl:48px;
   --radius-sm:12px; --radius-md:20px; --radius-lg:28px; --radius-full:999px;
@@ -110,27 +117,46 @@ Names match the Figma variables' code syntax exactly. Use semantic tokens in com
   --elevation-raised:0 10px 28px rgba(43,38,51,.14);
 
   /* Fonts */
-  --font-ui:"Nunito", system-ui, sans-serif;
+  --font-ui:"Nunito", system-ui, -apple-system, sans-serif;
   --font-hanzi:"Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+
+  /* Type scale — a fluid clamp() per style; the ten names are in the
+     Typography table below. Use the token, never a raw px size. */
+  --type-char-xl: clamp(100px, 13.4vw, 160px);
+  /* …--type-char-l, --type-char-m, --type-title, --type-section, --type-button,
+        --type-pinyin-l, --type-pinyin-m, --type-body, --type-small */
+
+  /* Motion */
+  --motion-press:90ms; --motion-flip:320ms; --motion-banner:260ms; --motion-shake:300ms;
+  --ease-out:cubic-bezier(.22,.61,.36,1);
 }
 ```
 
+`tokens.css` also zeroes every `--motion-*` under `@media (prefers-reduced-motion:
+reduce)`, so timing belongs in a token and never hard-coded in a component.
+
+**`css/tokens.css` is the source of truth for the values.** The block above is a
+map of what exists, not a copy to edit — change the file, not this document.
+
 ### Typography
 
-| Style | Font | Size / line height | Use |
-|---|---|---|---|
-| Character/XL | Noto Sans SC 500 | 160 / 176 | Identification card |
-| Character/L | Noto Sans SC 500 | 96 / 112 | This or That cards |
-| Character/M | Noto Sans SC 500 | 56 / 68 | Pinyin Match, Memory Match |
-| Heading/Title | Nunito 800 | 40 / 48 | Screen titles (short) |
-| Heading/Section | Nunito 800 | 28 / 36 | Profile names, banners |
-| Label/Button | Nunito 800 | 24 / 28 | Buttons |
-| Pinyin/L | Nunito 700 | 32 / 40 | Flipped Identification card |
-| Pinyin/M | Nunito 700 | 24 / 32 | Pinyin chips |
-| Body/Default | Nunito 600 | 20 / 28 | Short helper text |
-| Body/Small | Nunito 700 | 16 / 22 | Grown-up notes, captions |
+Every style is a token that already scales itself. Reach for the token, not the px.
 
-On phones, scale Character and Heading sizes down with `clamp()`, but never let tap targets go below 64px.
+| Style | Token | Font | Phone → Figma | Use |
+|---|---|---|---|---|
+| Character/XL | `--type-char-xl` | Noto Sans SC 500 | 100 → 160 | Identification card |
+| Character/L | `--type-char-l` | Noto Sans SC 500 | 64 → 96 | This or That cards |
+| Character/M | `--type-char-m` | Noto Sans SC 500 | 40 → 56 | Pinyin Match, Memory Match |
+| Heading/Title | `--type-title` | Nunito 800 | 28 → 40 | Screen titles (short) |
+| Heading/Section | `--type-section` | Nunito 800 | 22 → 28 | Profile names, banners |
+| Label/Button | `--type-button` | Nunito 800 | 20 → 24 | Buttons |
+| Pinyin/L | `--type-pinyin-l` | Nunito 700 | 24 → 32 | Flipped Identification card |
+| Pinyin/M | `--type-pinyin-m` | Nunito 700 | 20 → 24 | Pinyin chips |
+| Body/Default | `--type-body` | Nunito 600 | 17 → 20 | Short helper text |
+| Body/Small | `--type-small` | Nunito 700 | 14 → 16 | Grown-up notes, captions |
+
+The phone end of each `clamp()` is already chosen to keep tap targets at or above
+64px — never let one go below that.
 
 ## Components (match Figma → Components page)
 
@@ -151,6 +177,8 @@ All interactive elements have the **chunky edge**: a 6px bottom border (`--size-
 | Feedback Banner | Correct, Try again | 560px, slides up from bottom, icon circle + short message |
 | Progress Bar | 0–100 | 480×24 track, jade fill, top of every activity screen |
 | Grown-up Note | single | Plum pill: "Play this one with a grown-up", Identification first use only |
+| Dialog | plain, confirm, maths gate | **Code only, no Figma frame.** 480px panel on a dim backdrop. Closes on Escape, on a backdrop tap and on any route change. `confirmDialog()` resolves `false` on every exit that is not the confirm button |
+| Toggle | off, on | **Code only, no Figma frame.** 88×64 switch, jade when on, chunky edge like every other control. Grown-ups page only |
 
 ## Screens (Figma → Wireframes, iPad landscape 1194×834)
 
@@ -178,6 +206,7 @@ Each wireframe has a caption under it in Figma describing its behaviour. Read it
 ```js
 // localStorage keys (versioned)
 "lh:v1:profiles"            -> [{ id, name, age, avatar: { art: "panda", color: "persimmon" }, levelId: "A1", createdAt }]
+"lh:v1:active"              -> "<profileId>" | null   // who is playing; set by tapping a profile
 "lh:v1:progress:<profileId>" -> {
   A1: {
     completedStations: [1, 2],      // replayable
@@ -234,6 +263,10 @@ Keep this data clean and complete: future stars, scores and rankings will be bui
 ## Working rules for Claude
 
 - Build **in phases** (below). At the end of each phase: run it locally (`npx serve .` or `python3 -m http.server`), summarise what changed, commit with a clear message, then **stop and wait for review**.
+- There is no `package.json` and no test runner, so "run the tests" means:
+  `node --input-type=module -e "import {summary} from './js/tests/engine-tests.js'; console.log(JSON.stringify(summary()))"`
+  (56 assertions as of 2026-10-08), or open `/tests.html` for the same file in a browser.
+  Screens have no automated coverage — drive them in a browser before claiming they work.
 - Read the Figma frame for a screen (via the Figma MCP) before building it. Match tokens and components; do not invent new colours or sizes.
 - No frameworks, bundlers or new dependencies without asking.
 - Never show red, X marks or harsh sounds for wrong answers.
@@ -243,12 +276,12 @@ Keep this data clean and complete: future stars, scores and rankings will be bui
 
 ## Build phases
 
-1. **Foundation:** folder structure, tokens.css, fonts, base layout, icon and avatar SVGs, `data/levels.json` + `data/a1.json` (from the brief's word table + manifest), `storage.js`, `data.js`, `audio.js` (unlock + preload + play), hash router.
-2. **Profiles:** screens 01–04. Create/select profiles with name, age, avatar; level picker (A1 open, A2–A9 locked).
-3. **Path + engine:** screen 05, `tracking.js`, `path.js`, `station.js` with unit-style checks for the word-set, difficult and weakest-first rules (a simple `tests.html` page is fine).
-4. **Activities:** This or That (06–07), Identification (08–09), Pinyin Match (10), Memory Match (11). One activity at a time, each reviewed on a real iPad. ✅
-5. **Endings:** Well done (12) ✅, level check result (13–14), replaying completed stations.
-6. **Polish + ship:** feedback sounds, transitions, landscape/portrait/phone checks, test on iPad Safari, deploy to Cloudflare Pages with the custom domain.
+1. ✅ **Foundation:** folder structure, tokens.css, fonts, base layout, icon and avatar SVGs, `data/levels.json` + `data/a1.json` (from the brief's word table + manifest), `storage.js`, `data.js`, `audio.js` (unlock + preload + play), hash router.
+2. ✅ **Profiles:** screens 01–04. Create/select profiles with name, age, avatar; level picker (A1 open, A2–A9 locked).
+3. ✅ **Path + engine:** screen 05, `tracking.js`, `path.js`, `station.js` with unit-style checks for the word-set, difficult and weakest-first rules (a simple `tests.html` page is fine).
+4. ✅ **Activities:** This or That (06–07), Identification (08–09), Pinyin Match (10), Memory Match (11). One activity at a time, each reviewed on a real iPad.
+5. **Endings:** Well done (12) ✅, replaying a completed station ✅ (`isStationPlayable` allows any non-locked station). **Left: level check result (13–14)** — nothing yet renders "Level A1 done!" / "So close!", so station 8's result currently goes nowhere.
+6. **Polish + ship:** feedback sounds ✅, Cloudflare Pages on the custom domain ✅, Grown-ups page ✅ (added after this list was written — see decision 10). Left: transitions and a real-device pass on iPad Safari.
 
 Live at https://littlehanzi.kasahkod.cc (Cloudflare Pages, auto-deploys from main).
 Note: Cloudflare strips `.html`, so `/tests.html` redirects to `/tests`.
