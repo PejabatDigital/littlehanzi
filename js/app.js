@@ -3,7 +3,7 @@
 
 import * as storage from './storage.js';
 import * as audio from './audio.js';
-import { el, clear } from './ui.js';
+import { el, clear, closeAllDialogs } from './ui.js';
 
 import * as welcome from './screens/welcome.js';
 import * as profiles from './screens/profiles.js';
@@ -12,6 +12,7 @@ import * as levels from './screens/levels.js';
 import * as path from './screens/path.js';
 import * as station from './screens/station.js';
 import * as done from './screens/done.js';
+import * as parents from './screens/parents.js';
 
 const routes = new Map();
 let mount = null;
@@ -68,6 +69,7 @@ async function renderOnce() {
 
   runCleanup(currentCleanup);
   currentCleanup = null;
+  closeAllDialogs();
 
   let renderer = routes.get(name);
 
@@ -141,11 +143,15 @@ function registerScreens() {
   route('path', path.render);
   route('station', station.render);
   route('done', done.render);
+  route('parents', parents.render);
 }
 
 export async function start(mountNode) {
   mount = mountNode;
   registerScreens();
+
+  // Device settings apply before the first sound can play.
+  try { audio.setSfxEnabled((await storage.getSettings()).sfx); } catch (_) { /* keep default */ }
 
   window.addEventListener('hashchange', render);
 

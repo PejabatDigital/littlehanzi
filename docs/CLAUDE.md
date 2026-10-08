@@ -25,6 +25,8 @@ The Figma file has 4 pages: **Cover**, **Foundations** (tokens, type, spacing, r
 6. **Welcome screen only on first launch** (no profiles yet). Its Start tap unlocks audio. Afterwards the app opens on "Who's playing?", where tapping a profile also unlocks audio.
 7. **Home button** on the path goes to "Who's playing?" (switch child). Home inside an activity goes back to the path. Leaving mid-station discards that station's in-progress state but keeps the word stats already recorded.
 8. **Feedback sounds:** soft, short, friendly (chime for correct, gentle "boop" for try again). Never a buzzer. Synthesise with Web Audio or add tiny SFX files in `audio/sfx/`.
+9. **No read-aloud speaker on "Who's playing?" or "Pick a level"** (a grown-up handles setup). "Well done!" keeps its speaker.
+10. **Grown-ups page** (`#/parents`): reached from the grown-up button top-right of "Who's playing?", behind a maths gate (two-digit addition; a wrong answer gives a fresh sum). Holds: players (Edit, Level, Reset, Delete), a sound-effects toggle (word audio always plays), feedback by email to hello@pejabatdigital.com, and an About note. The gate stays passed only until "Who's playing?" shows again (`session.js`, in memory). Edit reuses New player (`#/new-player?edit=<id>`); Level reuses Pick a level (`#/levels?for=<id>`). Reset clears progress on every level plus the one-off flags, keeping name, avatar and level. Confirmations use the in-app dialog in `ui.js`, never `confirm()`.
 
 ## Tech
 
@@ -52,7 +54,7 @@ The Figma file has 4 pages: **Cover**, **Foundations** (tokens, type, spacing, r
 /js/activities/identification.js
 /js/activities/pinyin-match.js
 /js/activities/memory-match.js
-/js/screens/*.js         welcome, profiles, new-player, levels, path, station, done, level-result
+/js/screens/*.js         welcome, profiles, new-player, levels, path, station, done, level-result, parents (Grown-ups)
 /data/levels.json        [{ "id": "A1", "file": "data/a1.json", "available": true }, { "id": "A2", "available": false }, …]
 /data/a1.json            30 words, shape in the brief (§3)
 /audio/a1/*.mp3          + a1_manifest.json
@@ -186,6 +188,13 @@ Each wireframe has a caption under it in Figma describing its behaviour. Read it
     }
   }
 }
+```
+
+Also stored (added after v1 planning):
+
+```js
+"lh:v1:flags:<profileId>"   -> { "identification-note": true }  // one-off per-child flags
+"lh:v1:settings"            -> { sfx: true }            // device-wide, Grown-ups page
 ```
 
 Keep this data clean and complete: future stars, scores and rankings will be built on it.

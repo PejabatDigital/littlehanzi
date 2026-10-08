@@ -1,19 +1,23 @@
-/* 04 Pick a level — A1 open, A2–A9 locked until their data exists. */
+/* 04 Pick a level — A1 open, A2–A9 locked until their data exists.
+   With ?for=<id> (from the Grown-ups page) it changes that player's level. */
 
 import { el, iconEl, Button, RoundButton } from '../ui.js';
 import * as audio from '../audio.js';
 import * as storage from '../storage.js';
 import { getLevels, getWords } from '../data.js';
-import { getDraftProfile, clearDraftProfile } from '../session.js';
+import { getDraftProfile, clearDraftProfile, isParentUnlocked } from '../session.js';
 import { go } from '../app.js';
 
 const TITLE = 'Pick a level';
 
-export async function render(mount) {
+export async function render(mount, params = {}) {
   const levels = await getLevels();
-  const draft = getDraftProfile();
+  const target = params.for ? await storage.getProfile(params.for) : null;
+  if (params.for && (!target || !isParentUnlocked())) { go('profiles'); return; }
+
+  const draft = target ? null : getDraftProfile();
   const activeId = await storage.getActiveProfileId();
-  const active = activeId ? await storage.getProfile(activeId) : null;
+  const active = target || (activeId ? await storage.getProfile(activeId) : null);
 
   // No draft and no active profile means the page was opened cold — go home.
   if (!draft && !active) { go('profiles'); return; }
@@ -58,10 +62,15 @@ export async function render(mount) {
   });
 
   const start = Button({
-    label: 'Start',
-    iconName: 'play',
+    label: target ? 'Save' : 'Start',
+    iconName: target ? 'check' : 'play',
     style: 'primary',
     onClick: async () => {
+      if (target) {
+        if (target.levelId !== selected) await storage.updateProfile(target.id, { levelId: selected });
+        go('parents');
+        return;
+      }
       audio.unlock();                       // deliberately not awaited
       if (draft) {
         const profile = await storage.createProfile({ ...draft, levelId: selected });
@@ -84,14 +93,7 @@ export async function render(mount) {
           ariaLabel: 'Back', onClick: () => history.back(),
         }),
       ]),
-      el('div', { class: 'row' }, [
-        el('h1', { class: 't-title', text: TITLE }),
-        audio.canSpeak() ? RoundButton({
-          iconName: 'speaker', size: 'm', style: 'audio',
-          ariaLabel: `Read "${TITLE}" aloud`,
-          onClick: () => audio.speak(TITLE),
-        }) : null,
-      ]),
+      el('h1', { class: 't-title', text: TITLE }),
       el('div', { class: 'screen__header-side screen__header-side--end' }),
     ]),
     el('div', { class: 'screen__body' }, [

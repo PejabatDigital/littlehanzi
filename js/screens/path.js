@@ -52,8 +52,12 @@ export async function render(mount, params) {
   trail.setAttribute('vector-effect', 'non-scaling-stroke');
   svg.append(trail);
 
+  // Trail and stops share an inner box. On the vertical trail that box
+  // starts lower, leaving room for the Go bubble above station 1 so it
+  // never sits on the player header.
+  const inner = el('div', { class: 'path__inner' }, [svg]);
   const box = el('div', { class: 'path' }, [
-    svg,
+    inner,
     el('span', { class: 'path__label', text: meta?.name || `Level ${levelId}` }),
   ]);
 
@@ -69,13 +73,14 @@ export async function render(mount, params) {
       }),
     ]);
     stops.push(stop);
-    box.append(stop);
+    inner.append(stop);
   }
 
   // Landscape tablets run the trail across; portrait and phones run it down.
   const wideQuery = window.matchMedia('(min-width: 720px) and (min-aspect-ratio: 11/10)');
 
   function place() {
+    box.classList.toggle('path--down', !wideQuery.matches);
     const pts = layout(wideQuery.matches);
     stops.forEach((stop, i) => {
       stop.style.left = `${pts[i].x * 100}%`;

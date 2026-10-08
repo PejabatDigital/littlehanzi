@@ -6,6 +6,8 @@ const NS = 'lh:v1';
 const K_PROFILES = `${NS}:profiles`;
 const K_ACTIVE = `${NS}:active`;
 const K_PROGRESS = (profileId) => `${NS}:progress:${profileId}`;
+const K_FLAGS = (profileId) => `${NS}:flags:${profileId}`;
+const K_SETTINGS = `${NS}:settings`;
 
 let memoryFallback = null; // used if localStorage throws (private mode, blocked)
 
@@ -107,7 +109,18 @@ export async function deleteProfile(profileId) {
   const profiles = await getProfiles();
   writeJSON(K_PROFILES, profiles.filter((p) => p.id !== profileId));
   try { backing().removeItem(K_PROGRESS(profileId)); } catch (_) { /* ignore */ }
+  try { backing().removeItem(K_FLAGS(profileId)); } catch (_) { /* ignore */ }
   if (readJSON(K_ACTIVE, null) === profileId) writeJSON(K_ACTIVE, null);
+}
+
+/* Grown-ups page: wipe one child's progress on every level (and the
+   one-off flags), keeping the profile itself and its chosen level. */
+export async function resetProgress(profileId) {
+  const profile = await getProfile(profileId);
+  if (!profile) return null;
+  writeJSON(K_PROGRESS(profileId), { [profile.levelId || 'A1']: emptyLevelProgress() });
+  try { backing().removeItem(K_FLAGS(profileId)); } catch (_) { /* ignore */ }
+  return profile;
 }
 
 export async function getActiveProfileId() {
@@ -156,8 +169,6 @@ export async function updateWordStat(profileId, levelId, wordId, patchFn) {
 /* ---------------- one-off flags ----------------
    For things shown once per child, like the Identification grown-up note. */
 
-const K_FLAGS = (profileId) => `${NS}:flags:${profileId}`;
-
 export async function hasSeen(profileId, key) {
   const flags = readJSON(K_FLAGS(profileId), {});
   return Boolean(flags[key]);
@@ -167,6 +178,23 @@ export async function markSeen(profileId, key) {
   const flags = readJSON(K_FLAGS(profileId), {});
   flags[key] = true;
   writeJSON(K_FLAGS(profileId), flags);
+}
+
+/* ---------------- device settings ----------------
+   Shared by every child on this device. sfx = chimes, boops and taps;
+   word audio always plays because the app cannot teach without it. */
+
+const DEFAULT_SETTINGS = { sfx: true };
+
+export async function getSettings() {
+  const saved = readJSON(K_SETTINGS, {});
+  return { ...DEFAULT_SETTINGS, ...(saved && typeof saved === 'object' ? saved : {}) };
+}
+
+export async function saveSettings(patch) {
+  const next = { ...(await getSettings()), ...patch };
+  writeJSON(K_SETTINGS, next);
+  return next;
 }
 
 /* Escape hatch for tests only. */

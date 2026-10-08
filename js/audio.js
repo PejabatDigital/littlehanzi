@@ -6,6 +6,7 @@ let unlocked = false;
 const buffers = new Map();   // url -> AudioBuffer
 const pending = new Map();   // url -> Promise<AudioBuffer>
 let current = null;          // the source currently playing
+let sfxEnabled = true;       // Grown-ups page toggle; word audio ignores it
 
 const DECODE_TIMEOUT_MS = 4000;
 const PRELOAD_TIMEOUT_MS = 8000;
@@ -161,7 +162,11 @@ export async function play(url, { interrupt = true } = {}) {
 
 /* ---------------- feedback sounds (synthesised, no files) ---------------- */
 
+export function setSfxEnabled(on) { sfxEnabled = Boolean(on); }
+export function isSfxEnabled() { return sfxEnabled; }
+
 function tone({ freq, start, duration, peak = 0.18, type = 'sine' }) {
+  if (!sfxEnabled) return;
   const c = context();
   if (!c) return;
   const osc = c.createOscillator();

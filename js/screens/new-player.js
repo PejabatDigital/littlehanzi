@@ -1,18 +1,29 @@
 /* 03 New player — name, age and avatar, with a live preview.
-   The wireframe (8:194) is authoritative here: the flow board omits age. */
+   The wireframe (8:194) is authoritative here: the flow board omits age.
+   With ?edit=<id> (from the Grown-ups page) the same form edits a player. */
 
 import {
   el, clear, Avatar, AgeChip, Button, RoundButton,
   AVATAR_ART, AVATAR_COLORS,
 } from '../ui.js';
 import * as audio from '../audio.js';
-import { setDraftProfile } from '../session.js';
+import * as storage from '../storage.js';
+import { setDraftProfile, isParentUnlocked } from '../session.js';
 import { go } from '../app.js';
 
 const AGES = [3, 4, 5, 6, 7, 8, 9];
 
-export async function render(mount) {
-  const draft = { name: '', age: 6, avatar: { art: 'panda', color: 'persimmon' } };
+export async function render(mount, params = {}) {
+  const editing = params.edit ? await storage.getProfile(params.edit) : null;
+  if (params.edit && (!editing || !isParentUnlocked())) { go('profiles'); return; }
+
+  const draft = editing
+    ? {
+      name: editing.name || '',
+      age: AGES.includes(editing.age) ? editing.age : 6,
+      avatar: { art: editing.avatar?.art || 'panda', color: editing.avatar?.color || 'persimmon' },
+    }
+    : { name: '', age: 6, avatar: { art: 'panda', color: 'persimmon' } };
 
   /* ---- preview ---- */
   const previewAvatar = el('div');
@@ -99,12 +110,21 @@ export async function render(mount) {
 
   /* ---- next ---- */
   const next = Button({
-    label: 'Next',
-    iconName: 'play',
+    label: editing ? 'Save' : 'Next',
+    iconName: editing ? 'check' : 'play',
     style: 'primary',
     disabled: true,
-    onClick: () => {
+    onClick: async () => {
       if (!draft.name.trim()) return;
+      if (editing) {
+        await storage.updateProfile(editing.id, {
+          name: draft.name.trim(),
+          age: draft.age,
+          avatar: { ...draft.avatar },
+        });
+        go('parents');
+        return;
+      }
       setDraftProfile({ ...draft, name: draft.name.trim() });
       go('levels');
     },
@@ -127,7 +147,7 @@ export async function render(mount) {
           ariaLabel: 'Back', onClick: () => history.back(),
         }),
       ]),
-      el('h1', { class: 't-title', text: 'New player' }),
+      el('h1', { class: 't-title', text: editing ? 'Edit player' : 'New player' }),
       el('div', { class: 'screen__header-side screen__header-side--end' }),
     ]),
     el('div', { class: 'screen__body' }, [
@@ -151,4 +171,5 @@ export async function render(mount) {
   ]));
 
   nameInput.id = 'np-name';
+  nameInput.value = draft.name;
 }

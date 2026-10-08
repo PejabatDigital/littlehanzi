@@ -1068,3 +1068,206 @@
   .ident-answer { gap: var(--spacing-md); }
   .pm { gap: var(--spacing-md); }
 }
+
+/* ============================================================
+   Path — vertical trail headroom. The inner box holds the trail and
+   stops; on the vertical trail it starts lower so the Go bubble over
+   station 1 clears the player header.
+   ============================================================ */
+
+.path__inner { position: absolute; inset: 0; }
+.path--down .path__inner { top: 72px; }
+@media (max-width: 560px) {
+  .path--down .path__inner { top: 56px; }
+}
+
+/* Welcome: three large friends overflow a phone; shrink them there. */
+@media (max-width: 560px) {
+  .welcome-friends { gap: var(--spacing-sm); }
+  .welcome-friends .avatar--l { --av-size: 92px; }
+}
+
+/* ============================================================
+   Grown-up area — compact controls. Still 64px tall (tap minimum).
+   ============================================================ */
+
+.btn.btn--sm {
+  height: var(--size-tap-min);
+  min-width: 0;
+  padding: 0 var(--spacing-lg);
+  font-size: var(--type-body);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+}
+.btn.btn--sm .icon { width: 24px; height: 24px; }
+
+.level-chip--sm { font-size: 18px; padding: 2px 12px; }
+
+.gp-title { display: inline-flex; align-items: center; gap: var(--spacing-sm); }
+.gp-title .icon { width: 36px; height: 36px; color: var(--color-activity-identification); }
+
+.gp {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  padding-bottom: var(--spacing-2xl);
+}
+
+.gp-section { display: flex; flex-direction: column; gap: var(--spacing-md); }
+.gp-section__title {
+  margin: 0;
+  font-size: var(--type-section);
+  font-weight: 800;
+  line-height: 1.28;
+}
+
+.gp-players { display: flex; flex-direction: column; gap: var(--spacing-md); }
+
+.gp-player {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  border: 3px solid var(--color-border-default);
+}
+.gp-player__who { display: flex; align-items: center; gap: var(--spacing-md); min-width: 0; }
+.gp-player__meta { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; }
+.gp-player__name {
+  font-size: var(--type-section);
+  font-weight: 800;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gp-player__chips { gap: var(--spacing-sm); }
+.gp-player__chips .age-chip { padding: 2px 12px; }
+.gp-player__chips .age-chip__n { font-size: 18px; }
+.gp-player__chips .age-chip__sui { font-size: 16px; }
+.gp-player__actions { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
+
+.gp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  border: 3px solid var(--color-border-default);
+}
+.gp-row__text { display: flex; flex-direction: column; gap: 2px; }
+.gp-row__label { font-size: var(--type-body); font-weight: 800; }
+
+.gp-stack { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-sm); }
+.gp-stack p { margin: 0; }
+.gp-mail { align-self: flex-start; }
+
+@media (max-width: 560px) {
+  .gp-player { padding: var(--spacing-md); }
+  .gp-player__actions { width: 100%; }
+  .gp-player__actions .btn--sm { flex: 1 1 calc(50% - var(--spacing-sm)); padding: 0 var(--spacing-sm); }
+  .gp-row { padding: var(--spacing-md); }
+}
+
+/* Toggle — on = jade, with the chunky edge like every other control. */
+.toggle {
+  position: relative;
+  flex: none;
+  width: 88px;
+  height: var(--size-tap-min);
+  border-radius: var(--radius-full);
+  background: var(--color-state-locked-soft);
+  border: 3px solid var(--color-border-default);
+  border-bottom-width: var(--size-edge);
+  transition: background var(--motion-flip) var(--ease-out), border-color var(--motion-flip) var(--ease-out);
+}
+.toggle__knob {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-soft);
+  transition: transform var(--motion-flip) var(--ease-out);
+}
+.toggle.is-on {
+  background: var(--color-feedback-correct);
+  border-color: var(--color-feedback-correct-edge);
+}
+.toggle.is-on .toggle__knob { transform: translateX(26px); }
+
+/* ============================================================
+   Dialog — in-app modal (confirmations, maths gate).
+   ============================================================ */
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  background: rgba(43, 38, 51, .45);
+  animation: dialog-fade var(--motion-banner) var(--ease-out);
+}
+.dialog {
+  width: 100%;
+  max-width: 480px;
+  max-height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-raised);
+  text-align: center;
+}
+.dialog__title, .dialog__message { margin: 0; }
+.dialog__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  width: 100%;
+  margin-top: var(--spacing-sm);
+}
+.dialog__actions .btn { flex: 1 1 0; min-width: 0; padding: 0 var(--spacing-md); }
+
+@keyframes dialog-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* Maths gate */
+.gate { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-md); width: 100%; }
+.gate__sum {
+  margin: 0;
+  font-size: var(--type-title);
+  font-weight: 800;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.gate__input { width: 200px; text-align: center; font-variant-numeric: tabular-nums; }
+.gate__input.is-shaking { animation: shake var(--motion-shake) var(--ease-out); border-color: var(--color-feedback-try-again); }
+
+@media (max-width: 560px) {
+  .dialog { padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md); }
+  .dialog__actions { gap: var(--spacing-sm); }
+}
+
+/* Invisible twin of a 64px header button, so a title stays centred
+   when only one side of the header holds a control. */
+.header-spacer { display: block; width: var(--size-tap-min); height: 1px; flex: none; }
+@media (max-width: 560px) {
+  /* Header titles sit between two 64px controls on a phone; keep them on
+     one line, easing the size down on the narrowest screens. */
+  .screen__header > .t-title { white-space: nowrap; font-size: clamp(22px, 7vw, 28px); }
+}

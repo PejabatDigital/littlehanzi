@@ -23,7 +23,7 @@ export async function render(mount) {
     el('div', { class: 'screen__body' }, [
       el('h1', { class: 'wordmark', text: '小汉字' }),
       el('p', { class: 't-title', text: 'Little Hanzi' }),
-      el('div', { class: 'row' }, [
+      el('div', { class: 'row welcome-friends' }, [
         Avatar({ art: 'panda', color: 'persimmon', size: 'l' }),
         Avatar({ art: 'bunny', color: 'sky', size: 'l' }),
         Avatar({ art: 'cat', color: 'jade', size: 'l' }),
