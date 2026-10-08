@@ -153,11 +153,28 @@ export async function updateWordStat(profileId, levelId, wordId, patchFn) {
   return progress.words[wordId];
 }
 
+/* ---------------- one-off flags ----------------
+   For things shown once per child, like the Identification grown-up note. */
+
+const K_FLAGS = (profileId) => `${NS}:flags:${profileId}`;
+
+export async function hasSeen(profileId, key) {
+  const flags = readJSON(K_FLAGS(profileId), {});
+  return Boolean(flags[key]);
+}
+
+export async function markSeen(profileId, key) {
+  const flags = readJSON(K_FLAGS(profileId), {});
+  flags[key] = true;
+  writeJSON(K_FLAGS(profileId), flags);
+}
+
 /* Escape hatch for tests only. */
 export async function _clearAll() {
   const profiles = await getProfiles();
   for (const p of profiles) {
     try { backing().removeItem(K_PROGRESS(p.id)); } catch (_) { /* ignore */ }
+    try { backing().removeItem(K_FLAGS(p.id)); } catch (_) { /* ignore */ }
   }
   writeJSON(K_PROFILES, []);
   writeJSON(K_ACTIVE, null);

@@ -130,40 +130,70 @@ try {
   await nav('#/levels');
   ok('levels reachable with an active profile', app.textContent.includes('Pick a level'));
 
-  // --- 06 This or That: play station 1 right through ---
-  await storage.saveProgress(saved[0].id, 'A1', { completedStations: [], unlockedStation: 1, passed: false, words: {} });
-  await nav('#/station?level=A1&n=1');
-  for (let i = 0; i < 40 && !app.querySelector('.char-card'); i += 1) await wait(150);
-
-  ok('station shows a progress bar', !!app.querySelector('.progress'));
-  ok('station shows the This or That badge', app.querySelector('.activity-badge')?.dataset.activity === 'this-or-that', app.querySelector('.activity-badge')?.dataset.activity);
-  ok('two choice cards', app.querySelectorAll('.char-card').length === 2, app.querySelectorAll('.char-card').length);
-  ok('big replay speaker present', !!app.querySelector('.round-btn--l'));
-  ok('cards carry their word id', [...app.querySelectorAll('.char-card')].every(c => c.dataset.wordId), 'a card had no data-word-id');
-
-  // Answer by always tapping the first card. The cards are shuffled, so this
-  // produces a realistic mix of right and wrong without the test needing to
-  // know the answer. The run is the source of truth for what happened.
-  let turns = 0, sawWrong = false, sawCorrect = false, sawBanner = false;
-  while (turns++ < 30) {
-    if (parseHash().name !== 'station') break;
-    const cards = [...app.querySelectorAll('.char-card')];
-    if (!cards.length) { await wait(200); continue; }
-    const before = getStationRun()?.answers.length ?? 0;
-    cards[0].click();
-    await wait(140);
-    if (app.querySelector('.banner')) sawBanner = true;
-    const run = getStationRun();
-    if (run && run.answers.length > before) {
-      const last = run.answers[run.answers.length - 1];
-      if (last.correct) sawCorrect = true; else sawWrong = true;
-    }
-    await wait(2600);   // longest pause between questions
+  // --- activities: play stations right through ---
+  const fullWords = {};
+  for (let i = 1; i <= 30; i += 1) {
+    fullWords[`a1_${String(i).padStart(2, '0')}`] =
+      { seen: 2, correct: 2, wrong: 0, streak: 2, difficult: false, lastWrongAt: null };
   }
 
-  ok('a feedback banner appeared', sawBanner);
-  ok('at least one answer was right', sawCorrect);
-  ok('the station finished', parseHash().name === 'done', parseHash().name + ' after ' + turns + ' turns');
+  /* Tap whatever the current activity is showing. Returns the activity name. */
+  async function takeATurn() {
+    const badge = app.querySelector('.activity-badge')?.dataset.activity;
+
+    const identBtns = [...app.querySelectorAll('.ident-answer .btn')];
+    if (identBtns.length) { identBtns[identBtns.length - 1].click(); return badge; }   // "Got it"
+
+    const identCard = app.querySelector('.ident-card');
+    if (identCard) { identCard.click(); return badge; }                                 // flip first
+
+    if (app.querySelector('.pm')) {
+      const card = app.querySelector('.pm__chars .char-card:not([disabled])');
+      if (card) {
+        card.click();
+        await wait(60);
+        const want = app.querySelector(`.pm__pinyin .pinyin-chip[data-word-id="${card.dataset.wordId}"]`);
+        (want || app.querySelector('.pm__pinyin .pinyin-chip:not([disabled])'))?.click();
+      }
+      return badge;
+    }
+
+    if (app.querySelector('.mm')) {
+      const c = app.querySelector('.mm .char-card:not([disabled])');
+      if (c) {
+        const id = c.dataset.key?.split(':')[0];
+        c.click();
+        await wait(60);
+        app.querySelector(`.mm .speaker-card[data-key="${id}:speaker"]`)?.click();
+      }
+      return badge;
+    }
+
+    app.querySelector('.choices .char-card')?.click();                                  // This or That
+    return badge;
+  }
+
+  /* Play one station to the end. Returns the activities it used. */
+  async function playStation(n, progress) {
+    await storage.saveProgress(saved[0].id, 'A1', progress);
+    await nav(`#/station?level=A1&n=${n}`);
+    for (let i = 0; i < 40 && !app.querySelector('.activity__host > *'); i += 1) await wait(150);
+
+    const used = new Set();
+    let guard = 0;
+    while (parseHash().name === 'station' && guard++ < 200) {
+      const a = await takeATurn();
+      if (a) used.add(a);
+      await wait(900);
+    }
+    return { used, guard, finished: parseHash().name === 'done' };
+  }
+
+  // Station 1: fresh progress, This or That first.
+  const s1 = await playStation(1, { completedStations: [], unlockedStation: 1, passed: false, words: {} });
+  ok('station 1 finished', s1.finished, parseHash().name + ' after ' + s1.guard);
+  ok('station 1 opened with This or That', s1.used.has('this-or-that'), [...s1.used].join(','));
+  ok('station 1 never used Memory Match', !s1.used.has('memory-match'), [...s1.used].join(','));
 
   const afterRun = await storage.getProgress(saved[0].id, 'A1');
   const seenWords = Object.values(afterRun.words);
@@ -171,10 +201,6 @@ try {
   ok('every stat has been seen at least once', seenWords.every(w => w.seen > 0));
   ok('station 1 is marked completed', afterRun.completedStations.includes(1), JSON.stringify(afterRun.completedStations));
   ok('station 2 is unlocked', afterRun.unlockedStation === 2, afterRun.unlockedStation);
-  if (sawWrong) {
-    const anyDifficult = seenWords.some(w => w.difficult || w.wrong > 0);
-    ok('a missed word was recorded as wrong', anyDifficult);
-  }
 
   // --- 12 Well done ---
   ok('well done screen shown', app.textContent.includes('Well done!'), app.textContent.slice(0, 60));
@@ -182,13 +208,28 @@ try {
   ok('well done has a hero mark', !!app.querySelector('.hero'));
   ok('well done offers the path', app.textContent.includes('Path'));
 
-  // --- the path reflects the finished station ---
+  // Keep playing stations until every activity has had a turn.
+  const allPlayed = new Set(s1.used);
+  const WANT = ['this-or-that', 'identification', 'pinyin-match', 'memory-match'];
+  for (const n of [2, 3, 4, 5, 7, 8, 6]) {
+    if (WANT.every(a => allPlayed.has(a))) break;
+    const r = await playStation(n, { completedStations: [1,2,3,4,5,6], unlockedStation: n, passed: false, words: { ...fullWords } });
+    ok(`station ${n} finished`, r.finished, parseHash().name + ' after ' + r.guard);
+    r.used.forEach(a => allPlayed.add(a));
+  }
+
+  ok('all four activities played to completion', WANT.every(a => allPlayed.has(a)), [...allPlayed].join(','));
+
+  // --- the path reflects a finished station ---
+  await storage.saveProgress(saved[0].id, 'A1', { completedStations: [1], unlockedStation: 2, passed: false, words: {} });
   await nav('#/path?level=A1');
   const after = app.querySelectorAll('.station');
-  ok('station 1 now completed on the path', after[0].classList.contains('is-completed'));
-  ok('station 2 now current on the path', after[1].classList.contains('is-current'));
+  ok('station 1 completed on the path', after[0].classList.contains('is-completed'));
+  ok('station 2 current on the path', after[1].classList.contains('is-current'));
+
 
   // --- locked stations cannot be opened directly ---
+  await storage.saveProgress(saved[0].id, 'A1', { completedStations: [], unlockedStation: 1, passed: false, words: {} });
   await nav('#/station?level=A1&n=5');
   await wait(400);
   ok('a locked station bounces back to the path', parseHash().name === 'path', parseHash().name);

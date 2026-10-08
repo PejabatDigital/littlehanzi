@@ -237,9 +237,12 @@ Keep this data clean and complete: future stars, scores and rankings will be bui
 1. **Foundation:** folder structure, tokens.css, fonts, base layout, icon and avatar SVGs, `data/levels.json` + `data/a1.json` (from the brief's word table + manifest), `storage.js`, `data.js`, `audio.js` (unlock + preload + play), hash router.
 2. **Profiles:** screens 01–04. Create/select profiles with name, age, avatar; level picker (A1 open, A2–A9 locked).
 3. **Path + engine:** screen 05, `tracking.js`, `path.js`, `station.js` with unit-style checks for the word-set, difficult and weakest-first rules (a simple `tests.html` page is fine).
-4. **Activities:** This or That (06–07), Identification (08–09), Pinyin Match (10), Memory Match (11). One activity at a time, each reviewed on a real iPad.
-5. **Endings:** Well done (12), level check result (13–14), replaying completed stations.
+4. **Activities:** This or That (06–07), Identification (08–09), Pinyin Match (10), Memory Match (11). One activity at a time, each reviewed on a real iPad. ✅
+5. **Endings:** Well done (12) ✅, level check result (13–14), replaying completed stations.
 6. **Polish + ship:** feedback sounds, transitions, landscape/portrait/phone checks, test on iPad Safari, deploy to Cloudflare Pages with the custom domain.
+
+Live at https://littlehanzi.kasahkod.cc (Cloudflare Pages, auto-deploys from main).
+Note: Cloudflare strips `.html`, so `/tests.html` redirects to `/tests`.
 
 ## Done when (from the brief §11)
 

@@ -13,9 +13,15 @@ import { setStationRun, clearStationRun } from '../session.js';
 import { go } from '../app.js';
 
 import * as thisOrThat from '../activities/this-or-that.js';
+import * as identification from '../activities/identification.js';
+import * as pinyinMatch from '../activities/pinyin-match.js';
+import * as memoryMatch from '../activities/memory-match.js';
 
 const ACTIVITY_MODULES = {
   [ACTIVITY.THIS_OR_THAT]: thisOrThat,
+  [ACTIVITY.IDENTIFICATION]: identification,
+  [ACTIVITY.PINYIN_MATCH]: pinyinMatch,
+  [ACTIVITY.MEMORY_MATCH]: memoryMatch,
 };
 
 export async function render(mount, params) {
@@ -111,11 +117,18 @@ export async function render(mount, params) {
     const host = el('div', { class: 'activity__host' });
     body.insertBefore(host, feedbackSlot);
 
+    let showNote = false;
+    if (name === ACTIVITY.IDENTIFICATION) {
+      showNote = !(await storage.hasSeen(profile.id, identification.FIRST_USE_FLAG));
+      if (showNote) await storage.markSeen(profile.id, identification.FIRST_USE_FLAG);
+    }
+
     activityCleanup = await mod.start({
       mount: host,
       words,
       allWords,
       station,
+      showNote,
       recordAnswer,
       showFeedback,
       clearFeedback,

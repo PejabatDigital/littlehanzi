@@ -173,7 +173,6 @@
   font-size: 40px;
 }
 .char-card.is-dimmed { opacity: .45; }
-.char-card.is-matched { visibility: hidden; }
 
 /* ============================================================
    Pinyin Chip — tone marks must stay legible.
@@ -962,4 +961,110 @@
   .activity { gap: var(--spacing-lg); }
   .hero { width: 120px; height: 120px; }
   .hero .icon { width: 64px; height: 64px; }
+}
+
+/* ============================================================
+   Identification (08, 09)
+   ============================================================ */
+
+.ident-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  width: 380px;
+  max-width: 100%;
+  height: 400px;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  border-color: var(--color-border-default);
+  border-width: 3px 3px var(--size-edge) 3px;
+  color: var(--color-text-primary);
+}
+
+.ident-card__hanzi {
+  font-family: var(--font-hanzi);
+  font-weight: 500;
+  font-size: var(--type-char-xl);
+  line-height: 1.1;
+}
+
+/* Flipped: the character shrinks to make room for the pinyin. */
+.ident-card.is-flipped {
+  background: var(--color-action-audio-soft);
+  border-color: var(--color-border-selected);
+  border-width: 4px 4px 8px 4px;
+}
+.ident-card.is-flipped .ident-card__hanzi { font-size: var(--type-char-l); }
+
+.ident-card__pinyin {
+  font-size: var(--type-pinyin-l);
+  font-weight: 700;
+  color: var(--color-action-audio-edge);
+}
+.ident-card__speaker { color: var(--color-action-audio); }
+.ident-card__speaker .icon { width: 44px; height: 44px; }
+
+.ident-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--type-small);
+  font-weight: 700;
+}
+.ident-hint .icon { width: 24px; height: 24px; }
+
+.ident-answer { display: flex; align-items: center; gap: var(--spacing-xl); flex-wrap: wrap; justify-content: center; }
+
+/* ============================================================
+   Pinyin Match (10)
+   Landscape: characters in one row, pinyin in a second.
+   Portrait and phone: two side-by-side columns.
+   ============================================================ */
+
+.pm { display: flex; flex-direction: column; align-items: center; gap: 72px; }
+.pm__chars { display: flex; align-items: center; justify-content: center; gap: var(--spacing-lg); flex-wrap: wrap; }
+.pm__pinyin { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
+
+@media (max-aspect-ratio: 11/10), (max-width: 719px) {
+  /* Two side-by-side columns. They stretch to the same height and distribute
+     their items, so a character and its row of pinyin stay level even though
+     the cards and the chips are different heights. */
+  .pm {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: var(--spacing-lg);
+  }
+  .pm__chars, .pm__pinyin {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+  }
+}
+
+/* ============================================================
+   Memory Match (11) — 6 pairs, 12 cards.
+   ============================================================ */
+
+.mm {
+  display: grid;
+  grid-template-columns: repeat(6, auto);
+  gap: var(--spacing-lg) 20px;
+  justify-content: center;
+  align-content: center;
+}
+
+@media (max-aspect-ratio: 11/10) and (min-width: 561px) {
+  .mm { grid-template-columns: repeat(4, auto); }
+}
+
+@media (max-width: 560px) {
+  .mm { grid-template-columns: repeat(3, auto); gap: var(--spacing-sm); }
+  .ident-card { width: min(300px, 86vw); height: 320px; }
+  .ident-answer { gap: var(--spacing-md); }
+  .pm { gap: var(--spacing-md); }
 }
